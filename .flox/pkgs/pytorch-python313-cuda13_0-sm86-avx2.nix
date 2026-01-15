@@ -23,6 +23,7 @@ let
 in (python3Packages.pytorch.override {
   cudaSupport = true;
   cudaPackages = cudaPackages_13;
+  gpuTargets = [ gpuArch ];
 }).overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-cuda13_0-sm86-avx2";
   version = "2.9.1";

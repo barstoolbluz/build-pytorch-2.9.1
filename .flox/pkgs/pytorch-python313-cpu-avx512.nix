@@ -20,15 +20,16 @@ let
   # Use OpenBLAS for CPU linear algebra
   blasBackend = openblas;
 
-in python3Packages.pytorch.overrideAttrs (oldAttrs: {
+in (python3Packages.pytorch.override {
+  cudaSupport = false;
+}).overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-cpu-avx512";
   version = "2.9.1";
 
-  # Disable CUDA support for CPU-only build
+  # CPU-only build metadata
   passthru = oldAttrs.passthru // {
     gpuArch = null;
     blasProvider = "openblas";
-    cudaSupport = false;
   };
 
   # Override build configuration - remove CUDA deps, ensure BLAS
