@@ -1,11 +1,11 @@
 # PyTorch 2.9.1 Custom Build Environment
 
-This Flox environment builds custom PyTorch 2.9.1 variants with **CUDA 13.0** support and targeted optimizations for specific GPU architectures and CPU instruction sets.
+This Flox environment builds custom PyTorch 2.9.1 variants with **CUDA 12.8** support and targeted optimizations for specific GPU architectures and CPU instruction sets.
 
 ## Key Differences from PyTorch 2.8.0 Builds
 
-- **PyTorch Version**: 2.9.1 (latest stable with CUDA 13.0 support)
-- **CUDA Version**: 13.0 (requires `--stability=unstable` flag)
+- **PyTorch Version**: 2.9.1 (latest stable)
+- **CUDA Version**: 12.8 (stable in nixpkgs)
 - **GPU Support**: Full support for latest architectures including SM120 (RTX 5090)
 - **Build Method**: Uses upstream nixpkgs PyTorch with overrides (not built from scratch)
 
@@ -16,23 +16,23 @@ This Flox environment builds custom PyTorch 2.9.1 variants with **CUDA 13.0** su
 cd /home/daedalus/dev/builds/build-pytorch-2.9.1
 flox activate
 
-# Build a specific variant (CUDA 13.0 requires unstable flag)
-flox build --stability=unstable pytorch-python313-cuda13_0-sm120-avx512
+# Build a specific variant
+flox build --stability=unstable pytorch-python313-cuda12_8-sm120-avx512
 
-# The result will be in ./result-pytorch-python313-cuda13_0-sm120-avx512/
-ls -lh result-pytorch-python313-cuda13_0-sm120-avx512/lib/python3.13/site-packages/torch/
+# The result will be in ./result-pytorch-python313-cuda12_8-sm120-avx512/
+ls -lh result-pytorch-python313-cuda12_8-sm120-avx512/lib/python3.13/site-packages/torch/
 ```
 
 ## Available Variants
 
-### GPU Builds (CUDA 13.0)
+### GPU Builds (CUDA 12.8)
 
 | Package Name | GPU Architecture | CPU ISA | Hardware |
 |--------------|-----------------|---------|----------|
-| `pytorch-python313-cuda13_0-sm120-avx512` | SM120 | AVX-512 | RTX 5090 + modern CPUs |
-| `pytorch-python313-cuda13_0-sm90-avx512` | SM90 | AVX-512 | H100/L40S + modern CPUs |
-| `pytorch-python313-cuda13_0-sm86-avx2` | SM86 | AVX2 | RTX 3090/A40 + broad compatibility |
-| `pytorch-python313-cuda13_0-sm80-avx2` | SM80 | AVX2 | A100/A30 + broad compatibility |
+| `pytorch-python313-cuda12_8-sm120-avx512` | SM120 | AVX-512 | RTX 5090 + modern CPUs |
+| `pytorch-python313-cuda12_8-sm90-avx512` | SM90 | AVX-512 | H100/L40S + modern CPUs |
+| `pytorch-python313-cuda12_8-sm86-avx2` | SM86 | AVX2 | RTX 3090/A40 + broad compatibility |
+| `pytorch-python313-cuda12_8-sm80-avx2` | SM80 | AVX2 | A100/A30 + broad compatibility |
 
 ### CPU-Only Builds
 
@@ -43,14 +43,14 @@ ls -lh result-pytorch-python313-cuda13_0-sm120-avx512/lib/python3.13/site-packag
 
 ## Building Variants
 
-### GPU Builds (Require CUDA 13.0)
+### GPU Builds (With CUDA 12.8)
 
 ```bash
-# IMPORTANT: Use --stability=unstable for CUDA 13.0 support
-flox build --stability=unstable pytorch-python313-cuda13_0-sm120-avx512
-flox build --stability=unstable pytorch-python313-cuda13_0-sm90-avx512
-flox build --stability=unstable pytorch-python313-cuda13_0-sm86-avx2
-flox build --stability=unstable pytorch-python313-cuda13_0-sm80-avx2
+# Use --stability=unstable for PyTorch 2.9.1
+flox build --stability=unstable pytorch-python313-cuda12_8-sm120-avx512
+flox build --stability=unstable pytorch-python313-cuda12_8-sm90-avx512
+flox build --stability=unstable pytorch-python313-cuda12_8-sm86-avx2
+flox build --stability=unstable pytorch-python313-cuda12_8-sm80-avx2
 ```
 
 ### CPU-Only Builds
@@ -71,10 +71,10 @@ nvidia-smi --query-gpu=name,compute_cap --format=csv,noheader
 
 | Your GPU | Compute Cap | Use Build |
 |----------|-------------|-----------|
-| RTX 5090 | 12.0 | `pytorch-python313-cuda13_0-sm120-avx512` |
-| H100, H200, L40S | 9.0 | `pytorch-python313-cuda13_0-sm90-avx512` |
-| RTX 3090, A40 | 8.6 | `pytorch-python313-cuda13_0-sm86-avx2` |
-| A100, A30 | 8.0 | `pytorch-python313-cuda13_0-sm80-avx2` |
+| RTX 5090 | 12.0 | `pytorch-python313-cuda12_8-sm120-avx512` |
+| H100, H200, L40S | 9.0 | `pytorch-python313-cuda12_8-sm90-avx512` |
+| RTX 3090, A40 | 8.6 | `pytorch-python313-cuda12_8-sm86-avx2` |
+| A100, A30 | 8.0 | `pytorch-python313-cuda12_8-sm80-avx2` |
 | No GPU | N/A | `pytorch-python313-cpu-avx2` or `avx512` |
 
 ### Check Your CPU
@@ -90,7 +90,7 @@ lscpu | grep -E 'avx512|avx2'
 
 ```bash
 # Test the built package
-./test-build.sh pytorch-python313-cuda13_0-sm120-avx512
+./test-build.sh pytorch-python313-cuda12_8-sm120-avx512
 
 # Or test CPU build
 ./test-build.sh pytorch-python313-cpu-avx2
@@ -104,16 +104,16 @@ After successful builds:
 # Ensure git remote is configured
 git init
 git add .
-git commit -m "PyTorch 2.9.1 custom builds with CUDA 13.0"
+git commit -m "PyTorch 2.9.1 custom builds with CUDA 12.8"
 git remote add origin <your-repo-url>
 git push origin main
 
 # Publish to your organization
-flox publish -o <your-org> pytorch-python313-cuda13_0-sm120-avx512
+flox publish -o <your-org> pytorch-python313-cuda12_8-sm120-avx512
 flox publish -o <your-org> pytorch-python313-cpu-avx2
 
 # Users install with:
-flox install <your-org>/pytorch-python313-cuda13_0-sm120-avx512
+flox install <your-org>/pytorch-python313-cuda12_8-sm120-avx512
 ```
 
 ## Build Times & Requirements
@@ -121,21 +121,21 @@ flox install <your-org>/pytorch-python313-cuda13_0-sm120-avx512
 - **Time**: 1-3 hours per variant
 - **Disk**: ~20GB per build
 - **Memory**: 8GB+ RAM recommended
-- **CUDA 13.0**: Requires `--stability=unstable` flag
+- **PyTorch 2.9.1**: Requires `--stability=unstable` flag
 
 ## Technical Details
 
-### CUDA 13.0 Support
+### CUDA 12.8 Support
 
-CUDA 13.0 is available in unstable nixpkgs. Key features:
-- Support for all architectures from Turing through Blackwell
-- Removed legacy SM 5.x-7.0 support
-- Enhanced performance for modern GPUs
-- Required driver: 580+ (Linux)
+CUDA 12.8 provides stable support for all modern NVIDIA GPUs:
+- Full support for all architectures from Turing through Blackwell
+- Stable and well-tested in nixpkgs
+- Compatible with a wide range of NVIDIA drivers
+- Required driver: 535+ (Linux)
 
 ### PyTorch 2.9.1 Features
 
-- Full CUDA 13.0 support (prototype/experimental)
+- Full CUDA 12.8 support
 - Python 3.13 support
 - Improved performance on modern hardware
 - Better memory management
@@ -156,29 +156,29 @@ To add new variants:
 
 Example for RTX 4090 (SM89):
 ```bash
-cp .flox/pkgs/pytorch-python313-cuda13_0-sm90-avx512.nix \
-   .flox/pkgs/pytorch-python313-cuda13_0-sm89-avx512.nix
+cp .flox/pkgs/pytorch-python313-cuda12_8-sm90-avx512.nix \
+   .flox/pkgs/pytorch-python313-cuda12_8-sm89-avx512.nix
 
 # Edit to change:
 # - gpuArch = "sm_89"
-# - pname = "pytorch-python313-cuda13_0-sm89-avx512"
+# - pname = "pytorch-python313-cuda12_8-sm89-avx512"
 # - Update descriptions
 
-flox build --stability=unstable pytorch-python313-cuda13_0-sm89-avx512
+flox build --stability=unstable pytorch-python313-cuda12_8-sm89-avx512
 ```
 
 ## Troubleshooting
 
-### "cudaPackages_13 not found"
+### "torch not found" or version errors
 
-Make sure you're using the `--stability=unstable` flag:
+Make sure you're using the `--stability=unstable` flag for PyTorch 2.9.1:
 ```bash
 flox build --stability=unstable <package-name>
 ```
 
 ### Build fails with CUDA error
 
-Verify CUDA 13.0 is being used - check build logs for "cuda13.0" in package names.
+Verify CUDA 12.8 is being used - check build logs for "cuda12" in package names.
 
 ### Architecture mismatch
 
@@ -187,7 +187,7 @@ Ensure you're building for the correct GPU architecture. Use `nvidia-smi` to che
 ## Related Documentation
 
 - [PyTorch 2.9 Release Notes](https://pytorch.org/blog/pytorch-2-9/)
-- [CUDA 13.0 Documentation](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/)
+- [CUDA 12.8 Documentation](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/)
 - [Flox Documentation](https://flox.dev/docs/)
 
 ## License

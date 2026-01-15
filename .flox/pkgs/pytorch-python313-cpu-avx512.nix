@@ -24,7 +24,6 @@ in (python3Packages.torch.override {
   cudaSupport = false;
 }).overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-cpu-avx512";
-  version = "2.9.1";
 
   # CPU-only build metadata
   passthru = oldAttrs.passthru // {

@@ -1,10 +1,10 @@
 # PyTorch 2.9.1 optimized for NVIDIA Ampere (RTX 3090, A40) + AVX2
-# Package name: pytorch-python313-cuda13_0-sm86-avx2
+# Package name: pytorch-python313-cuda12_8-sm86-avx2
 
 { python3Packages
 , lib
 , config
-, cudaPackages_13
+, cudaPackages_12
 , addDriverRunpath
 , openblas
 }:
@@ -23,21 +23,20 @@ let
 
 in (python3Packages.torch.override {
   cudaSupport = true;
-  cudaPackages = cudaPackages_13;
+  cudaPackages = cudaPackages_12;
   gpuTargets = [ gpuArchNum ];
 }).overrideAttrs (oldAttrs: {
-  pname = "pytorch-python313-cuda13_0-sm86-avx2";
-  version = "2.9.1";
+  pname = "pytorch-python313-cuda12_8-sm86-avx2";
 
   # Override build configuration
   buildInputs = oldAttrs.buildInputs ++ [
-    cudaPackages_13.cuda_cudart
-    cudaPackages_13.libcublas
-    cudaPackages_13.libcufft
-    cudaPackages_13.libcurand
-    cudaPackages_13.libcusolver
-    cudaPackages_13.libcusparse
-    cudaPackages_13.cudnn
+    cudaPackages_12.cuda_cudart
+    cudaPackages_12.libcublas
+    cudaPackages_12.libcufft
+    cudaPackages_12.libcurand
+    cudaPackages_12.libcusolver
+    cudaPackages_12.libcusparse
+    cudaPackages_12.cudnn
     # Explicitly add dynamic OpenBLAS for host-side operations
     (openblas.override {
       blas64 = false;
@@ -70,7 +69,7 @@ in (python3Packages.torch.override {
     echo "========================================="
     echo "GPU Target: ${gpuArchSM} (NVIDIA Ampere - RTX 3090, A40)"
     echo "CPU Features: AVX2 (broad compatibility)"
-    echo "CUDA: 13.0 with cuBLAS"
+    echo "CUDA: 12.8 with cuBLAS"
     echo "TORCH_CUDA_ARCH_LIST: $TORCH_CUDA_ARCH_LIST"
     echo "CXXFLAGS: $CXXFLAGS"
     echo "========================================="
@@ -82,7 +81,7 @@ in (python3Packages.torch.override {
       Custom PyTorch 2.9.1 build with targeted optimizations:
       - GPU: NVIDIA Ampere (RTX 3090, RTX 3090 Ti, A40, A5000) - SM86
       - CPU: x86-64 with AVX2 instruction set (broad compatibility)
-      - CUDA: 13.0
+      - CUDA: 12.8
       - BLAS: cuBLAS for GPU operations, OpenBLAS for host-side
       - Python: 3.13
     '';
