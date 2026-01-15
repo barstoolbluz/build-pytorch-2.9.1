@@ -1,0 +1,89 @@
+# PyTorch 2.9.1 optimized for NVIDIA Ampere (RTX 3090, A40) + AVX2
+# Package name: pytorch-python313-cuda13_0-sm86-avx2
+
+{ python3Packages
+, lib
+, config
+, cudaPackages_13
+, addDriverRunpath
+, openblas
+}:
+
+let
+  # GPU target: SM86 (NVIDIA Ampere - RTX 3090, RTX 3090 Ti, A40, A5000)
+  gpuArch = "sm_86";
+
+  # CPU optimization: AVX2 (broad compatibility)
+  cpuFlags = [
+    "-mavx2"       # Advanced Vector Extensions 2
+    "-mfma"        # Fused multiply-add
+    "-mf16c"       # 16-bit float conversion
+  ];
+
+in (python3Packages.pytorch.override {
+  cudaSupport = true;
+  cudaPackages = cudaPackages_13;
+}).overrideAttrs (oldAttrs: {
+  pname = "pytorch-python313-cuda13_0-sm86-avx2";
+  version = "2.9.1";
+
+  # Override build configuration
+  buildInputs = oldAttrs.buildInputs ++ [
+    cudaPackages_13.cuda_cudart
+    cudaPackages_13.libcublas
+    cudaPackages_13.libcufft
+    cudaPackages_13.libcurand
+    cudaPackages_13.libcusolver
+    cudaPackages_13.libcusparse
+    cudaPackages_13.cudnn
+    # Explicitly add dynamic OpenBLAS for host-side operations
+    (openblas.override {
+      blas64 = false;
+      singleThreaded = false;
+    })
+  ];
+
+  nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [
+    addDriverRunpath
+  ];
+
+  # Set CUDA architecture and CPU optimization flags
+  preConfigure = (oldAttrs.preConfigure or "") + ''
+    export TORCH_CUDA_ARCH_LIST="${gpuArch}"
+    export TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
+
+    # CPU optimizations via compiler flags
+    export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
+    export CFLAGS="$CFLAGS ${lib.concatStringsSep " " cpuFlags}"
+
+    # Enable cuBLAS
+    export USE_CUBLAS=1
+    export USE_CUDA=1
+
+    # Optimize for target architecture
+    export CMAKE_CUDA_ARCHITECTURES="${lib.removePrefix "sm_" gpuArch}"
+
+    echo "========================================="
+    echo "PyTorch 2.9.1 Build Configuration"
+    echo "========================================="
+    echo "GPU Target: ${gpuArch} (NVIDIA Ampere - RTX 3090, A40)"
+    echo "CPU Features: AVX2 (broad compatibility)"
+    echo "CUDA: 13.0 with cuBLAS"
+    echo "TORCH_CUDA_ARCH_LIST: $TORCH_CUDA_ARCH_LIST"
+    echo "CXXFLAGS: $CXXFLAGS"
+    echo "========================================="
+  '';
+
+  meta = oldAttrs.meta // {
+    description = "PyTorch 2.9.1 optimized for NVIDIA Ampere (RTX 3090, A40) with AVX2";
+    longDescription = ''
+      Custom PyTorch 2.9.1 build with targeted optimizations:
+      - GPU: NVIDIA Ampere (RTX 3090, RTX 3090 Ti, A40, A5000) - SM86
+      - CPU: x86-64 with AVX2 instruction set (broad compatibility)
+      - CUDA: 13.0
+      - BLAS: cuBLAS for GPU operations, OpenBLAS for host-side
+      - Python: 3.13
+    '';
+    platforms = [ "x86_64-linux" ];
+  };
+})

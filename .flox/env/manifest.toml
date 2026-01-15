@@ -1,0 +1,101 @@
+# PyTorch 2.9.1 Custom Build Environment
+# Build targeted PyTorch variants with CUDA 13.0 and architecture-specific optimizations
+
+version = 1
+
+[install]
+# Build dependencies
+git.pkg-path = "git"
+cmake.pkg-path = "cmake"
+ninja.pkg-path = "ninja"
+pkg-config.pkg-path = "pkg-config"
+cacert.pkg-path = "cacert"
+
+# Python environment
+python3.pkg-path = "python313Full"
+uv.pkg-path = "uv"
+
+# Compiler toolchain
+gcc.pkg-path = "gcc"
+gcc-unwrapped.pkg-path = "gcc-unwrapped"
+gcc-unwrapped.priority = 5
+
+# Additional build tools
+which.pkg-path = "which"
+gnumake.pkg-path = "gnumake"
+coreutils.pkg-path = "coreutils"
+gnused.pkg-path = "gnused"
+gawk.pkg-path = "gawk"
+findutils.pkg-path = "findutils"
+gnutar.pkg-path = "gnutar"
+gzip.pkg-path = "gzip"
+bzip2.pkg-path = "bzip2"
+xz.pkg-path = "xz"
+gnupatch.pkg-path = "gnupatch"
+gnugrep.pkg-path = "gnugrep"
+diffutils.pkg-path = "diffutils"
+file.pkg-path = "file"
+
+[vars]
+NIXPKGS_ALLOW_UNFREE = "1"  # Required for CUDA packages
+
+[hook]
+on-activate = '''
+echo "========================================="
+echo "PyTorch 2.9.1 Build Environment (CUDA 13.0)"
+echo "========================================="
+echo ""
+echo "Available build commands:"
+echo "  flox build --stability=unstable <variant>  # Build a specific variant"
+echo ""
+echo "GPU variants (CUDA 13.0):"
+echo "  pytorch-python313-cuda13_0-sm120-avx512   # RTX 5090"
+echo "  pytorch-python313-cuda13_0-sm90-avx512    # H100/L40S"
+echo "  pytorch-python313-cuda13_0-sm86-avx2      # RTX 3090/A40"
+echo "  pytorch-python313-cuda13_0-sm80-avx2      # A100/A30"
+echo ""
+echo "CPU-only variants:"
+echo "  pytorch-python313-cpu-avx2                # Broad compatibility"
+echo "  pytorch-python313-cpu-avx512              # Modern CPUs"
+echo ""
+echo "Note: CUDA 13.0 requires --stability=unstable flag"
+echo "========================================="
+'''
+
+[profile]
+common = '''
+# Helper functions for building and testing
+build_variant() {
+    local variant="$1"
+    echo "Building PyTorch 2.9.1 variant: $variant"
+
+    if [[ "$variant" == *"cuda13"* ]]; then
+        echo "Note: Using --stability=unstable for CUDA 13.0 support"
+        flox build --stability=unstable "$variant"
+    else
+        flox build "$variant"
+    fi
+}
+
+test_variant() {
+    local variant="$1"
+    if [ -f "./test-build.sh" ]; then
+        ./test-build.sh "$variant"
+    else
+        echo "Test script not found. Run: ./create-test-scripts.sh"
+    fi
+}
+
+list_variants() {
+    echo "Available PyTorch 2.9.1 variants:"
+    ls -1 .flox/pkgs/*.nix 2>/dev/null | xargs -n1 basename | sed 's/.nix$//' | sort
+}
+
+# Export helper functions
+export -f build_variant
+export -f test_variant
+export -f list_variants
+'''
+
+[options]
+systems = ["x86_64-linux", "aarch64-linux"]
