@@ -11,7 +11,8 @@
 
 let
   # GPU target: SM120 (NVIDIA Blackwell - RTX 5090)
-  gpuArch = "sm_120";
+  gpuArchSM = "sm_120";  # For TORCH_CUDA_ARCH_LIST
+  gpuArchNum = "12.0";   # For gpuTargets override (numeric format)
 
   # CPU optimization: AVX-512
   cpuFlags = [
@@ -25,7 +26,7 @@ let
 in (python3Packages.pytorch.override {
   cudaSupport = true;
   cudaPackages = cudaPackages_13;
-  gpuTargets = [ gpuArch ];
+  gpuTargets = [ gpuArchNum ];
 }).overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-cuda13_0-sm120-avx512";
   version = "2.9.1";
@@ -52,7 +53,7 @@ in (python3Packages.pytorch.override {
 
   # Set CUDA architecture and CPU optimization flags
   preConfigure = (oldAttrs.preConfigure or "") + ''
-    export TORCH_CUDA_ARCH_LIST="${gpuArch}"
+    export TORCH_CUDA_ARCH_LIST="${gpuArchSM}"
     export TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
 
     # CPU optimizations via compiler flags
@@ -64,12 +65,12 @@ in (python3Packages.pytorch.override {
     export USE_CUDA=1
 
     # Optimize for target architecture
-    export CMAKE_CUDA_ARCHITECTURES="${lib.removePrefix "sm_" gpuArch}"
+    export CMAKE_CUDA_ARCHITECTURES="${lib.removePrefix "sm_" gpuArchSM}"
 
     echo "========================================="
     echo "PyTorch 2.9.1 Build Configuration"
     echo "========================================="
-    echo "GPU Target: ${gpuArch} (NVIDIA Blackwell - RTX 5090)"
+    echo "GPU Target: ${gpuArchSM} (NVIDIA Blackwell - RTX 5090)"
     echo "CPU Features: AVX-512"
     echo "CUDA: 13.0 with cuBLAS"
     echo "TORCH_CUDA_ARCH_LIST: $TORCH_CUDA_ARCH_LIST"

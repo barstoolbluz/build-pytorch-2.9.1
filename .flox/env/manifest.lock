@@ -1,0 +1,1454 @@
+{
+  "lockfile-version": 1,
+  "manifest": {
+    "version": 1,
+    "install": {
+      "bzip2": {
+        "pkg-path": "bzip2"
+      },
+      "cacert": {
+        "pkg-path": "cacert"
+      },
+      "cmake": {
+        "pkg-path": "cmake"
+      },
+      "coreutils": {
+        "pkg-path": "coreutils"
+      },
+      "diffutils": {
+        "pkg-path": "diffutils"
+      },
+      "file": {
+        "pkg-path": "file"
+      },
+      "findutils": {
+        "pkg-path": "findutils"
+      },
+      "gawk": {
+        "pkg-path": "gawk"
+      },
+      "gcc": {
+        "pkg-path": "gcc",
+        "priority": 1
+      },
+      "git": {
+        "pkg-path": "git"
+      },
+      "gnugrep": {
+        "pkg-path": "gnugrep"
+      },
+      "gnumake": {
+        "pkg-path": "gnumake"
+      },
+      "gnupatch": {
+        "pkg-path": "gnupatch"
+      },
+      "gnused": {
+        "pkg-path": "gnused"
+      },
+      "gnutar": {
+        "pkg-path": "gnutar"
+      },
+      "gzip": {
+        "pkg-path": "gzip"
+      },
+      "ninja": {
+        "pkg-path": "ninja"
+      },
+      "pkg-config": {
+        "pkg-path": "pkg-config"
+      },
+      "python3": {
+        "pkg-path": "python313Full"
+      },
+      "uv": {
+        "pkg-path": "uv"
+      },
+      "which": {
+        "pkg-path": "which"
+      },
+      "xz": {
+        "pkg-path": "xz"
+      }
+    },
+    "vars": {
+      "NIXPKGS_ALLOW_UNFREE": "1"
+    },
+    "hook": {
+      "on-activate": "echo \"=========================================\"\necho \"PyTorch 2.9.1 Build Environment (CUDA 13.0)\"\necho \"=========================================\"\necho \"\"\necho \"Available build commands:\"\necho \"  flox build --stability=unstable <variant>  # Build a specific variant\"\necho \"\"\necho \"GPU variants (CUDA 13.0):\"\necho \"  pytorch-python313-cuda13_0-sm120-avx512   # RTX 5090\"\necho \"  pytorch-python313-cuda13_0-sm90-avx512    # H100/L40S\"\necho \"  pytorch-python313-cuda13_0-sm86-avx2      # RTX 3090/A40\"\necho \"  pytorch-python313-cuda13_0-sm80-avx2      # A100/A30\"\necho \"\"\necho \"CPU-only variants:\"\necho \"  pytorch-python313-cpu-avx2                # Broad compatibility\"\necho \"  pytorch-python313-cpu-avx512              # Modern CPUs\"\necho \"\"\necho \"Note: CUDA 13.0 requires --stability=unstable flag\"\necho \"=========================================\"\n"
+    },
+    "profile": {
+      "common": "# Helper functions for building and testing\nbuild_variant() {\n    local variant=\"$1\"\n    echo \"Building PyTorch 2.9.1 variant: $variant\"\n\n    if [[ \"$variant\" == *\"cuda13\"* ]]; then\n        echo \"Note: Using --stability=unstable for CUDA 13.0 support\"\n        flox build --stability=unstable \"$variant\"\n    else\n        flox build \"$variant\"\n    fi\n}\n\ntest_variant() {\n    local variant=\"$1\"\n    if [ -f \"./test-build.sh\" ]; then\n        ./test-build.sh \"$variant\"\n    else\n        echo \"Test script not found. Run: ./create-test-scripts.sh\"\n    fi\n}\n\nlist_variants() {\n    echo \"Available PyTorch 2.9.1 variants:\"\n    ls -1 .flox/pkgs/*.nix 2>/dev/null | xargs -n1 basename | sed 's/.nix$//' | sort\n}\n\n# Export helper functions\nexport -f build_variant\nexport -f test_variant\nexport -f list_variants\n"
+    },
+    "options": {
+      "systems": [
+        "x86_64-linux",
+        "aarch64-linux"
+      ]
+    }
+  },
+  "packages": [
+    {
+      "attr_path": "bzip2",
+      "broken": false,
+      "derivation": "/nix/store/8anlrq3m0pmlk3y6v5sbxp6cm6mdi25z-bzip2-1.0.8.drv",
+      "description": "High-quality data compression program",
+      "install_id": "bzip2",
+      "license": "BSD-4-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "bzip2-1.0.8",
+      "pname": "bzip2",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:14.206005Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.0.8",
+      "outputs_to_install": [
+        "bin",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/raib9x1z0lbln33mxbhdhkx83ah8dcwk-bzip2-1.0.8-bin",
+        "dev": "/nix/store/m3wqr4w18hkk25z333yi8war97cn1hbf-bzip2-1.0.8-dev",
+        "man": "/nix/store/8jm31nqjcf7mkq1rbrx4njicx1ysaz6p-bzip2-1.0.8-man",
+        "out": "/nix/store/6z0434cr1qifdc19sj6gvhcfnfh50fy2-bzip2-1.0.8"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "bzip2",
+      "broken": false,
+      "derivation": "/nix/store/5jc4ikzk5i70mwms3rxqhlik9rqszmny-bzip2-1.0.8.drv",
+      "description": "High-quality data compression program",
+      "install_id": "bzip2",
+      "license": "BSD-4-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "bzip2-1.0.8",
+      "pname": "bzip2",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:42.553601Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.0.8",
+      "outputs_to_install": [
+        "bin",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/yiwcf5lsmalda0211g2nra5p20vmbp3q-bzip2-1.0.8-bin",
+        "dev": "/nix/store/0bkx7vfbh9kkr5z5kr34alggpyydllml-bzip2-1.0.8-dev",
+        "man": "/nix/store/y2c68jpz44r4rswcga5j2jzd1zxf2jk6-bzip2-1.0.8-man",
+        "out": "/nix/store/rzipk1q7q1kcfrdmqdj10pcxsn3pig8b-bzip2-1.0.8"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "cacert",
+      "broken": false,
+      "derivation": "/nix/store/mjqaz2x0hb23b7sygh21lx8cr6ihayj5-nss-cacert-3.114.drv",
+      "description": "Bundle of X.509 certificates of public Certificate Authorities (CA)",
+      "install_id": "cacert",
+      "license": "MPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "nss-cacert-3.114",
+      "pname": "cacert",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:14.210520Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.114",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "hashed": "/nix/store/bgld0a25w90iqaxv6iigb3yv5wmhrwj8-nss-cacert-3.114-hashed",
+        "out": "/nix/store/41sg75c8q60cja24lwlnqn9jcpkmj3za-nss-cacert-3.114",
+        "p11kit": "/nix/store/0n1cp9swfa2zfavmkskvr7qr212yg0jz-nss-cacert-3.114-p11kit",
+        "unbundled": "/nix/store/ifzy086l4dmynvlsyhj9wkdypfjn6bbi-nss-cacert-3.114-unbundled"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "cacert",
+      "broken": false,
+      "derivation": "/nix/store/9a7kdqajdla5iy5mkxphwkhfj0r14n48-nss-cacert-3.114.drv",
+      "description": "Bundle of X.509 certificates of public Certificate Authorities (CA)",
+      "install_id": "cacert",
+      "license": "MPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "nss-cacert-3.114",
+      "pname": "cacert",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:42.558759Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.114",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "hashed": "/nix/store/ix9nl56hwc3lj6ixvmkyrxv8qscmq5pj-nss-cacert-3.114-hashed",
+        "out": "/nix/store/62ng4hr8akz1lmlf2g90hn2aypy8l9w6-nss-cacert-3.114",
+        "p11kit": "/nix/store/449dh8ggrs83a7h49mf8c0ijlqxfj81r-nss-cacert-3.114-p11kit",
+        "unbundled": "/nix/store/z79211rayky78r8r0i894sd2gmpf7yqn-nss-cacert-3.114-unbundled"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "cmake",
+      "broken": false,
+      "derivation": "/nix/store/4krkpvs3rklia4sj1ba357awfvarvvjx-cmake-3.31.7.drv",
+      "description": "Cross-platform, open-source build system generator",
+      "install_id": "cmake",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "cmake-3.31.7",
+      "pname": "cmake",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:14.468108Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.31.7",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/z0h5pwnk70b0hzk9qb7209fppgrf080z-cmake-3.31.7-debug",
+        "out": "/nix/store/8avklqi4flb0y3dp6pqvqdkzx8i5dv9d-cmake-3.31.7"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "cmake",
+      "broken": false,
+      "derivation": "/nix/store/m7iryi1pj2wl876ll5x9yvr55p7hxajh-cmake-3.31.7.drv",
+      "description": "Cross-platform, open-source build system generator",
+      "install_id": "cmake",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "cmake-3.31.7",
+      "pname": "cmake",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:42.841737Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.31.7",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/nnpfia0s39cy3l7rq2pnn2axs8k625jw-cmake-3.31.7-debug",
+        "out": "/nix/store/0vnarm4qjnj16dr3zj9kwq6bn79c0icn-cmake-3.31.7"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "coreutils",
+      "broken": false,
+      "derivation": "/nix/store/8aqa21xmqqp97bg262h66i9x2q5qb2j9-coreutils-9.7.drv",
+      "description": "GNU Core Utilities",
+      "install_id": "coreutils",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "coreutils-9.7",
+      "pname": "coreutils",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:14.555565Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "9.7",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/cc5l6ccqsiwcxdc3pnvbxzq0j0sdj2sl-coreutils-9.7-debug",
+        "info": "/nix/store/k70dlccri6bvba3ng9dl816a60qs0dyp-coreutils-9.7-info",
+        "out": "/nix/store/cszmlyd1lh1x2g9p6b0l6b14v29axd2b-coreutils-9.7"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "coreutils",
+      "broken": false,
+      "derivation": "/nix/store/pg0av15acgyr03zs5q6f8w6ayqs0jk8r-coreutils-9.7.drv",
+      "description": "GNU Core Utilities",
+      "install_id": "coreutils",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "coreutils-9.7",
+      "pname": "coreutils",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:42.945613Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "9.7",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/yi254l2sapfa4xc04c8my85vj5mnx39b-coreutils-9.7-debug",
+        "info": "/nix/store/r7y6a2r4s644sawyy0371phq04qiagmh-coreutils-9.7-info",
+        "out": "/nix/store/xbp2j3z0lhizr5vvzff4dgdcxgs8i2w7-coreutils-9.7"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "diffutils",
+      "broken": false,
+      "derivation": "/nix/store/qbp2rqs1mmw86ccpa6z9ban2yz496wy9-diffutils-3.12.drv",
+      "description": "Commands for showing the differences between files (diff, cmp, etc.)",
+      "install_id": "diffutils",
+      "license": "GPL-3.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "diffutils-3.12",
+      "pname": "diffutils",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:14.758750Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.12",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/akp4kc6m1ghq4bp5bdvx99dvlr2gpna6-diffutils-3.12-info",
+        "out": "/nix/store/rqvjv2lysv32xfjb5cm28g79ci0snlr3-diffutils-3.12"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "diffutils",
+      "broken": false,
+      "derivation": "/nix/store/92c3aic585yba7wbwnpw6da92hpvnqhf-diffutils-3.12.drv",
+      "description": "Commands for showing the differences between files (diff, cmp, etc.)",
+      "install_id": "diffutils",
+      "license": "GPL-3.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "diffutils-3.12",
+      "pname": "diffutils",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:43.184309Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.12",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/hsy893daic70vg3kdqw0v44p45mh2kjy-diffutils-3.12-info",
+        "out": "/nix/store/wjd5xfqk2cm55wfkc0nyxlg38d1h17x0-diffutils-3.12"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "file",
+      "broken": false,
+      "derivation": "/nix/store/agvnx9i2di69kv1hfdkb260ka23x0w14-file-5.45.drv",
+      "description": "Program that shows the type of files",
+      "install_id": "file",
+      "license": "BSD-2-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "file-5.45",
+      "pname": "file",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:15.218910Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "5.45",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/3ichk89k4yzvwwrai88wpha1gypvng2h-file-5.45-dev",
+        "man": "/nix/store/jbgvw8hg8d8kd0kzd7xipa3s3aly3m2x-file-5.45-man",
+        "out": "/nix/store/53gdsilqwdk2i9sm0kj5ss6m11j5diqd-file-5.45"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "file",
+      "broken": false,
+      "derivation": "/nix/store/0gbnj5yww8k1yjz9ws0w08qnk3w1hkbw-file-5.45.drv",
+      "description": "Program that shows the type of files",
+      "install_id": "file",
+      "license": "BSD-2-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "file-5.45",
+      "pname": "file",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:43.726391Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "5.45",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/j7cgx4hisknk6jy3b18rjhklg6cr6k5m-file-5.45-dev",
+        "man": "/nix/store/n4gyyf9p21yijh1krdrhs1m7ivry5gyh-file-5.45-man",
+        "out": "/nix/store/y7f2zy3nzqmf1pn1jzs7pwpp2ap719fp-file-5.45"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "findutils",
+      "broken": false,
+      "derivation": "/nix/store/fhg7s71xd5gp3bnq4ja775wfpnhf4m7v-findutils-4.10.0.drv",
+      "description": "GNU Find Utilities, the basic directory searching utilities of the GNU operating system",
+      "install_id": "findutils",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "findutils-4.10.0",
+      "pname": "findutils",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:15.230156Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.10.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/r1qkrd1gvcb2cvwp6r974qf4wxia6b7i-findutils-4.10.0-info",
+        "locate": "/nix/store/b4vksh639nb1zjz3dracac707jics3nl-findutils-4.10.0-locate",
+        "out": "/nix/store/fnlnhm15q5rhv9880c60vw4gn1f84cby-findutils-4.10.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "findutils",
+      "broken": false,
+      "derivation": "/nix/store/l2pkzk0164l299ih4f5sn2l80zw1hjqj-findutils-4.10.0.drv",
+      "description": "GNU Find Utilities, the basic directory searching utilities of the GNU operating system",
+      "install_id": "findutils",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "findutils-4.10.0",
+      "pname": "findutils",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:43.739778Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.10.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/hkq1s4l4kgncvcr74ysqb5ffy4znadva-findutils-4.10.0-info",
+        "locate": "/nix/store/k9v70wwxc6bilf1apna10l08l7azammx-findutils-4.10.0-locate",
+        "out": "/nix/store/bn3p3g6lsl0wa4ybrvik5rk4j5h3q7lb-findutils-4.10.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gawk",
+      "broken": false,
+      "derivation": "/nix/store/ycx0g499zzdcg4nwbw786i4cwgg437g2-gawk-5.3.2.drv",
+      "description": "GNU implementation of the Awk programming language",
+      "install_id": "gawk",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gawk-5.3.2",
+      "pname": "gawk",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:15.451622Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "5.3.2",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/dfkk9hlzpwjdgg9anxcbj0dckr3riz3m-gawk-5.3.2-info",
+        "man": "/nix/store/cb1dhdxdqn3cxs1iw4330cms1kvjn686-gawk-5.3.2-man",
+        "out": "/nix/store/hvqzgmbj2nr52yfz8gvjdi7myljjdcq1-gawk-5.3.2"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gawk",
+      "broken": false,
+      "derivation": "/nix/store/nbg08r57bj8sip88i4kln0rb6kyr1h0y-gawk-5.3.2.drv",
+      "description": "GNU implementation of the Awk programming language",
+      "install_id": "gawk",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gawk-5.3.2",
+      "pname": "gawk",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:43.993292Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "5.3.2",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/kwf6yzl5bvmxqil7nyzsa54icgyb1axw-gawk-5.3.2-info",
+        "man": "/nix/store/0cxynx99rwx5zyyj417f8gj13mnlspwq-gawk-5.3.2-man",
+        "out": "/nix/store/0f4bvykzxsjvxh01jh1zai6s5jjlrach-gawk-5.3.2"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gcc",
+      "broken": false,
+      "derivation": "/nix/store/m97hx3y4y93ldsl5fcqg6c4hlr4h7r44-gcc-wrapper-14.3.0.drv",
+      "description": "GNU Compiler Collection, version 14.3.0 (wrapper script)",
+      "install_id": "gcc",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gcc-wrapper-14.3.0",
+      "pname": "gcc",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:15.461590Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "14.3.0",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/ds1f9znhf2hp3x5hrak6sjcwxpwv6pas-gcc-wrapper-14.3.0-info",
+        "man": "/nix/store/2caf9bjar7dk1rm2wprhmkvrs82bgpzd-gcc-wrapper-14.3.0-man",
+        "out": "/nix/store/sf05r8srgh21m1804jvagbidggh05n08-gcc-wrapper-14.3.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 1
+    },
+    {
+      "attr_path": "gcc",
+      "broken": false,
+      "derivation": "/nix/store/20y7rngzq2487g4hmdgn94a9gdhjdn5k-gcc-wrapper-14.3.0.drv",
+      "description": "GNU Compiler Collection, version 14.3.0 (wrapper script)",
+      "install_id": "gcc",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gcc-wrapper-14.3.0",
+      "pname": "gcc",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:44.004191Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "14.3.0",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/06f2l6yw87mz3qf70dbkbqmcv5im6jp5-gcc-wrapper-14.3.0-info",
+        "man": "/nix/store/2d54z742vs7gr9x0is4apbblvlky4219-gcc-wrapper-14.3.0-man",
+        "out": "/nix/store/bcw9f6r9v2fm3kv7d15fcrya0mf34xds-gcc-wrapper-14.3.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 1
+    },
+    {
+      "attr_path": "git",
+      "broken": false,
+      "derivation": "/nix/store/cag2vmqfhk084vksp1sm91knr5vj08l5-git-2.50.1.drv",
+      "description": "Distributed version control system",
+      "install_id": "git",
+      "license": "GPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "git-2.50.1",
+      "pname": "git",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:15.577218Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.50.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/ln77l8pbk2gyvavr0lgb45xq4i4y5f2p-git-2.50.1-debug",
+        "doc": "/nix/store/i8gjlj5vpcllwpkw53lzxl2wa8j7vlld-git-2.50.1-doc",
+        "out": "/nix/store/jpadzfxc9zz3cacng4wlyn6vzhgf3mga-git-2.50.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "git",
+      "broken": false,
+      "derivation": "/nix/store/nzkqrgvy8zxsw70b7aswr7knckip7s3h-git-2.50.1.drv",
+      "description": "Distributed version control system",
+      "install_id": "git",
+      "license": "GPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "git-2.50.1",
+      "pname": "git",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:44.131786Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.50.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/xipypc58mgavflc7am3m28sk9hpczwf6-git-2.50.1-debug",
+        "doc": "/nix/store/64fvclm5bwrp7zff8wa3cl8z6lhczc9s-git-2.50.1-doc",
+        "out": "/nix/store/zhv8ib8y1zfi76afddfnp8fmm562bgaa-git-2.50.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnugrep",
+      "broken": false,
+      "derivation": "/nix/store/2h8whsf2fh02ch9bkhfp1zakzm3ih52h-gnugrep-3.12.drv",
+      "description": "GNU implementation of the Unix grep command",
+      "install_id": "gnugrep",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gnugrep-3.12",
+      "pname": "gnugrep",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:16.076144Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.12",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/nbkxrjf356k1lw43r0spcsxvqcmdrj6v-gnugrep-3.12-info",
+        "out": "/nix/store/hrij655yc4ypvik3hmhs9hina14hnpm3-gnugrep-3.12"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnugrep",
+      "broken": false,
+      "derivation": "/nix/store/nya5kq3k30m99x43yfmjbynaqq4p16bq-gnugrep-3.12.drv",
+      "description": "GNU implementation of the Unix grep command",
+      "install_id": "gnugrep",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gnugrep-3.12",
+      "pname": "gnugrep",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:44.684505Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.12",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/0qh76zz0jiwvak9l7zhylfykz7qsyf6i-gnugrep-3.12-info",
+        "out": "/nix/store/5ygilvgz6l47fw3x5ylb0cz1afgc3737-gnugrep-3.12"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnumake",
+      "broken": false,
+      "derivation": "/nix/store/1x5ln31dx2i0i0lc9vv2ipxmfvp96z8c-gnumake-4.4.1.drv",
+      "description": "Tool to control the generation of non-source files from sources",
+      "install_id": "gnumake",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gnumake-4.4.1",
+      "pname": "gnumake",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:16.078106Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.4.1",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/phqsvq5432c7655jnchkj2gg8zl67hzh-gnumake-4.4.1-debug",
+        "info": "/nix/store/gskf8zrnqslr6ic7k7wxhiszv1wjwl3p-gnumake-4.4.1-info",
+        "man": "/nix/store/x2ikrfqd9lfiwg3sywvhby677jid4q2y-gnumake-4.4.1-man",
+        "out": "/nix/store/67ixprznvajk1pfjrwcwj6naqp928xxz-gnumake-4.4.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnumake",
+      "broken": false,
+      "derivation": "/nix/store/5mr8hwa1asihwp0b82jcwslz1mlx1qv2-gnumake-4.4.1.drv",
+      "description": "Tool to control the generation of non-source files from sources",
+      "install_id": "gnumake",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gnumake-4.4.1",
+      "pname": "gnumake",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:44.686587Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.4.1",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/64axkp3yv64qafg42ln08clqf6c6mnky-gnumake-4.4.1-debug",
+        "info": "/nix/store/yz2b37m5chsvk73w5nk7g915gv1s7acn-gnumake-4.4.1-info",
+        "man": "/nix/store/hm1vq8hnsw55v8p8q25clw05prc46vmb-gnumake-4.4.1-man",
+        "out": "/nix/store/hy6gzi2np7wxpc6qyvi24pax5h3vdmyn-gnumake-4.4.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnupatch",
+      "broken": false,
+      "derivation": "/nix/store/dg5lq5ssbgyj90i8r9w0s71a0cs6fn1r-patch-2.8.drv",
+      "description": "GNU Patch, a program to apply differences to files",
+      "install_id": "gnupatch",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "patch-2.8",
+      "pname": "gnupatch",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:16.080450Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.8",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/sh1ylfixlmi97hxmyqflhg9c9i7fh6bw-patch-2.8"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnupatch",
+      "broken": false,
+      "derivation": "/nix/store/pisic3wry1v5awpnz75hbmzm0ccs9dz6-patch-2.8.drv",
+      "description": "GNU Patch, a program to apply differences to files",
+      "install_id": "gnupatch",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "patch-2.8",
+      "pname": "gnupatch",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:44.689081Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.8",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/8j75alqms3ldbds4b4zip9mmy4af59ml-patch-2.8"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnused",
+      "broken": false,
+      "derivation": "/nix/store/gplp09y8l3p23fq0zqmf8325ywqbfqp0-gnused-4.9.drv",
+      "description": "GNU sed, a batch stream editor",
+      "install_id": "gnused",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gnused-4.9",
+      "pname": "gnused",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:16.086740Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.9",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/1pw2fsxyfqqggjw3a6hqv17b2lzkr0vb-gnused-4.9-info",
+        "out": "/nix/store/bhxji28y31j62d094b7w724ygyif8msl-gnused-4.9"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnused",
+      "broken": false,
+      "derivation": "/nix/store/lrymy7ly83nqlrykdxfh38gfar6rld8v-gnused-4.9.drv",
+      "description": "GNU sed, a batch stream editor",
+      "install_id": "gnused",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gnused-4.9",
+      "pname": "gnused",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:44.696153Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.9",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/l5bhfk86bpkbah6n69ydk80k6b60n0rf-gnused-4.9-info",
+        "out": "/nix/store/i74283mw5bncn16i0zbz0lvvq4sn0q87-gnused-4.9"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnutar",
+      "broken": false,
+      "derivation": "/nix/store/r0r56vynyg3lxh446rgxvjmz2554cj7i-gnutar-1.35.drv",
+      "description": "GNU implementation of the `tar' archiver",
+      "install_id": "gnutar",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gnutar-1.35",
+      "pname": "gnutar",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:16.089917Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.35",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/gqfy2mcjzxcbkc7g3y4ch5cz4wam5zh1-gnutar-1.35-info",
+        "out": "/nix/store/jm9xgbl41n47pik3rcrsfxdi3p1cgzmj-gnutar-1.35"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnutar",
+      "broken": false,
+      "derivation": "/nix/store/cqnccsakb8ygs0sf0w2qni384pdrdlc6-gnutar-1.35.drv",
+      "description": "GNU implementation of the `tar' archiver",
+      "install_id": "gnutar",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gnutar-1.35",
+      "pname": "gnutar",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:44.699452Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.35",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/rdkj5p574clw96j521kvsar237dls7zh-gnutar-1.35-info",
+        "out": "/nix/store/wa302h6k7rvrp6mzvq96swdyh3np0cyh-gnutar-1.35"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gzip",
+      "broken": false,
+      "derivation": "/nix/store/y90n2yi2hvrbc7hiaqvw8x2hab3r7nhb-gzip-1.14.drv",
+      "description": "GNU zip compression program",
+      "install_id": "gzip",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gzip-1.14",
+      "pname": "gzip",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:16.440488Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.14",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/wmgbsn5yscgs2hxdc0vd9kmh63jzxs4h-gzip-1.14-info",
+        "man": "/nix/store/fbax3ya92m887jhl45058cismvy6iskm-gzip-1.14-man",
+        "out": "/nix/store/gqfdrhrr3bbn3bshzgjlpkd7j7082lzn-gzip-1.14"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gzip",
+      "broken": false,
+      "derivation": "/nix/store/6pfn9dywwnkdzf4wxqg8nc8qn6cj9ab2-gzip-1.14.drv",
+      "description": "GNU zip compression program",
+      "install_id": "gzip",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gzip-1.14",
+      "pname": "gzip",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:33:45.105459Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.14",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/5z1djbffckkw3lr7940zp9v7hq6prc5j-gzip-1.14-info",
+        "man": "/nix/store/0r888161sr9ljwc3m13cjxxcrhj6my0a-gzip-1.14-man",
+        "out": "/nix/store/6w3g3nzyqqvhv36q2xj22k4d9vw3jl7h-gzip-1.14"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "ninja",
+      "broken": false,
+      "derivation": "/nix/store/z16645wqrcvvj53ng47rqmy8y1d72bhq-ninja-1.13.1.drv",
+      "description": "Small build system with a focus on speed",
+      "install_id": "ninja",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "ninja-1.13.1",
+      "pname": "ninja",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:33:49.727862Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.13.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/1715y06hl4s7pdz4c0n2ijvj6f6732rv-ninja-1.13.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "ninja",
+      "broken": false,
+      "derivation": "/nix/store/cavzxbygx6zvbqq7jrmqdh1ac6czrhi6-ninja-1.13.1.drv",
+      "description": "Small build system with a focus on speed",
+      "install_id": "ninja",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "ninja-1.13.1",
+      "pname": "ninja",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:34:21.918381Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.13.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/nrq9nb3zpnc70wjqwkkf3bq9g261l4ak-ninja-1.13.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "pkg-config",
+      "broken": false,
+      "derivation": "/nix/store/gxvn8p77j3zqvvrhiy00fmgy5ljn6isq-pkg-config-wrapper-0.29.2.drv",
+      "description": "Tool that allows packages to find out information about other packages (wrapper script)",
+      "install_id": "pkg-config",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "pkg-config-wrapper-0.29.2",
+      "pname": "pkg-config",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:34:10.506055Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.29.2",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "doc": "/nix/store/n639lsb81zf1xxqkl7vrx49pcspy5lc4-pkg-config-wrapper-0.29.2-doc",
+        "man": "/nix/store/y8aw5hrx9pdgq5zbm0csh4sxi2qz72lb-pkg-config-wrapper-0.29.2-man",
+        "out": "/nix/store/7x6d0hvbv87cxr0y0xxx133z1nsqn7rs-pkg-config-wrapper-0.29.2"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "pkg-config",
+      "broken": false,
+      "derivation": "/nix/store/cclkh9l1swk5mmyrs02jmx5k93d0k3gq-pkg-config-wrapper-0.29.2.drv",
+      "description": "Tool that allows packages to find out information about other packages (wrapper script)",
+      "install_id": "pkg-config",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "pkg-config-wrapper-0.29.2",
+      "pname": "pkg-config",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:34:43.416988Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.29.2",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "doc": "/nix/store/nbgl9xq7v54mjjviaw6yvv5xn741agmc-pkg-config-wrapper-0.29.2-doc",
+        "man": "/nix/store/vficmbcz4n3y8n5h03qbfkdbw9yi2sqp-pkg-config-wrapper-0.29.2-man",
+        "out": "/nix/store/kpm72cx1jysgxw485i2gj2dwwqrisxdk-pkg-config-wrapper-0.29.2"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python313Full",
+      "broken": false,
+      "derivation": "/nix/store/z3w5j4q3wypmpy1iz672941yy8b68afm-python3-3.13.6.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python3",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "python3-3.13.6",
+      "pname": "python313Full",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:34:38.524522Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "python3-3.13.6",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/xw8aq2wz6bszbq6j68hzjh0zph993njn-python3-3.13.6-debug",
+        "out": "/nix/store/k0xjq43s8vqxpq38wi2qgjv8nwyh26pf-python3-3.13.6"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python313Full",
+      "broken": false,
+      "derivation": "/nix/store/yps7ag8sxphi6axld04vq9bx6cqhfqma-python3-3.13.6.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python3",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "python3-3.13.6",
+      "pname": "python313Full",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:35:13.255369Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "python3-3.13.6",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/6c54bxd0w634v5s8mfx1z5y6rvsq6xp6-python3-3.13.6-debug",
+        "out": "/nix/store/0n3p6v273rh7g1ypbfc0vwlw1sw79y1p-python3-3.13.6"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "uv",
+      "broken": false,
+      "derivation": "/nix/store/s1ax1wx2hdbmxfmhi1hmx3apg7x7yfgk-uv-0.8.6.drv",
+      "description": "Extremely fast Python package installer and resolver, written in Rust",
+      "install_id": "uv",
+      "license": "[ Apache-2.0, MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "uv-0.8.6",
+      "pname": "uv",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:36:18.960387Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.8.6",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/li6y1v2mjj30fd5prwkawidq5lcn9ja9-uv-0.8.6"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "uv",
+      "broken": false,
+      "derivation": "/nix/store/f6q6yz695fsxay19rd8lws833955mm5v-uv-0.8.6.drv",
+      "description": "Extremely fast Python package installer and resolver, written in Rust",
+      "install_id": "uv",
+      "license": "[ Apache-2.0, MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "uv-0.8.6",
+      "pname": "uv",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:36:57.324771Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.8.6",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/hxvcjq4a053l4gm8asl4ynjyhlz2azib-uv-0.8.6"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "which",
+      "broken": false,
+      "derivation": "/nix/store/mz3m7ral0cqhhzi9vbxd6qcqjr2n6m79-which-2.23.drv",
+      "description": "Shows the full path of (shell) commands",
+      "install_id": "which",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "which-2.23",
+      "pname": "which",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:36:32.560815Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.23",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/13wkgk734cgpmppik34j0rqwdcz3vh33-which-2.23"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "which",
+      "broken": false,
+      "derivation": "/nix/store/znhylc8dk88kwbbsh152ywqkmi988qcj-which-2.23.drv",
+      "description": "Shows the full path of (shell) commands",
+      "install_id": "which",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "which-2.23",
+      "pname": "which",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:37:11.979452Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.23",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/wn3l5zfyw2vj6ca3a2i9zqz9icfvp12f-which-2.23"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "xz",
+      "broken": false,
+      "derivation": "/nix/store/8c40bpqwkm9wqsjvdsaddr7av1v9fmp4-xz-5.8.1.drv",
+      "description": "General-purpose data compression software, successor of LZMA",
+      "install_id": "xz",
+      "license": "[ GPL-2.0-or-later, LGPL-2.1-or-later ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "xz-5.8.1",
+      "pname": "xz",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:36:36.637568Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "5.8.1",
+      "outputs_to_install": [
+        "bin",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/xgqx95vngglwpb6b84na4vflsa1q1h4q-xz-5.8.1-bin",
+        "dev": "/nix/store/yxcn8zr8bm2gfn721z1aagp30mzw9k45-xz-5.8.1-dev",
+        "doc": "/nix/store/gqxdlg207v8jwnzqqg1mg5haf66vqmwn-xz-5.8.1-doc",
+        "man": "/nix/store/jszp5siwiy9fqwas5pwkyagg4d0pyfw3-xz-5.8.1-man",
+        "out": "/nix/store/5qpm4xr5d34jckhyh56y8ql07zlaa0fk-xz-5.8.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "xz",
+      "broken": false,
+      "derivation": "/nix/store/1agf028x5dpqgy9mcnrnshl2839d5988-xz-5.8.1.drv",
+      "description": "General-purpose data compression software, successor of LZMA",
+      "install_id": "xz",
+      "license": "[ GPL-2.0-or-later, LGPL-2.1-or-later ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "xz-5.8.1",
+      "pname": "xz",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:37:16.630296Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "5.8.1",
+      "outputs_to_install": [
+        "bin",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/fksqvzy6pc1a4rbpyyiq4932m22aq5h4-xz-5.8.1-bin",
+        "dev": "/nix/store/mwv7yi3w6af091ygf8j2ynkzyaxzl6fr-xz-5.8.1-dev",
+        "doc": "/nix/store/njfclbbzjaknphb7b7gk8f2ra6d279y3-xz-5.8.1-doc",
+        "man": "/nix/store/5qzkbkb0ci6917kjqqgabppwqf867n9a-xz-5.8.1-man",
+        "out": "/nix/store/q9mrk95cx43h8m026kj3qd5aara2332i-xz-5.8.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    }
+  ]
+}

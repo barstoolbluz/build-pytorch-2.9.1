@@ -17,8 +17,7 @@ uv.pkg-path = "uv"
 
 # Compiler toolchain
 gcc.pkg-path = "gcc"
-gcc-unwrapped.pkg-path = "gcc-unwrapped"
-gcc-unwrapped.priority = 5
+gcc.priority = 1
 
 # Additional build tools
 which.pkg-path = "which"

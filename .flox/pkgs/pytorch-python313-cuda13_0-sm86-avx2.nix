@@ -11,7 +11,8 @@
 
 let
   # GPU target: SM86 (NVIDIA Ampere - RTX 3090, RTX 3090 Ti, A40, A5000)
-  gpuArch = "sm_86";
+  gpuArchSM = "sm_86";  # For TORCH_CUDA_ARCH_LIST
+  gpuArchNum = "8.6";   # For gpuTargets override (numeric format)
 
   # CPU optimization: AVX2 (broad compatibility)
   cpuFlags = [
@@ -23,7 +24,7 @@ let
 in (python3Packages.pytorch.override {
   cudaSupport = true;
   cudaPackages = cudaPackages_13;
-  gpuTargets = [ gpuArch ];
+  gpuTargets = [ gpuArchNum ];
 }).overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-cuda13_0-sm86-avx2";
   version = "2.9.1";
@@ -50,7 +51,7 @@ in (python3Packages.pytorch.override {
 
   # Set CUDA architecture and CPU optimization flags
   preConfigure = (oldAttrs.preConfigure or "") + ''
-    export TORCH_CUDA_ARCH_LIST="${gpuArch}"
+    export TORCH_CUDA_ARCH_LIST="${gpuArchSM}"
     export TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
 
     # CPU optimizations via compiler flags
@@ -62,12 +63,12 @@ in (python3Packages.pytorch.override {
     export USE_CUDA=1
 
     # Optimize for target architecture
-    export CMAKE_CUDA_ARCHITECTURES="${lib.removePrefix "sm_" gpuArch}"
+    export CMAKE_CUDA_ARCHITECTURES="${lib.removePrefix "sm_" gpuArchSM}"
 
     echo "========================================="
     echo "PyTorch 2.9.1 Build Configuration"
     echo "========================================="
-    echo "GPU Target: ${gpuArch} (NVIDIA Ampere - RTX 3090, A40)"
+    echo "GPU Target: ${gpuArchSM} (NVIDIA Ampere - RTX 3090, A40)"
     echo "CPU Features: AVX2 (broad compatibility)"
     echo "CUDA: 13.0 with cuBLAS"
     echo "TORCH_CUDA_ARCH_LIST: $TORCH_CUDA_ARCH_LIST"
