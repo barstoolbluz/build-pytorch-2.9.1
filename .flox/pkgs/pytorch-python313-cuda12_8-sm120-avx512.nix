@@ -1,19 +1,17 @@
-# PyTorch 2.9.1 optimized for NVIDIA Blackwell (RTX 5090) + AVX-512
+# PyTorch optimized for NVIDIA Blackwell (SM120: RTX 5090) + AVX-512
 # Package name: pytorch-python313-cuda12_8-sm120-avx512
 
 { python3Packages
 , lib
 , config
-, cudaPackages_12
+, cudaPackages
 , addDriverRunpath
-, openblas
-, fetchFromGitHub
 }:
 
 let
-  # GPU target: SM120 (NVIDIA Blackwell - RTX 5090)
-  gpuArchSM = "sm_120";  # For TORCH_CUDA_ARCH_LIST
-  gpuArchNum = "12.0";   # For gpuTargets override (numeric format)
+  # GPU target: SM120 (Blackwell architecture - RTX 5090)
+  # PyTorch's CMake accepts numeric format (12.0) not sm_120
+  gpuArchNum = "12.0";
 
   # CPU optimization: AVX-512
   cpuFlags = [
@@ -24,86 +22,50 @@ let
     "-mfma"        # Fused multiply-add
   ];
 
-in (python3Packages.pytorch.override {
-  cudaSupport = true;
-  cudaPackages = cudaPackages_12;
-  gpuTargets = [ gpuArchNum ];
-}).overrideAttrs (oldAttrs: {
-  pname = "pytorch-python313-cuda12_8-sm120-avx512";
-  version = "2.9.1";
+in
+  # Two-stage override:
+  # 1. Enable CUDA and specify GPU targets
+  (python3Packages.pytorch.override {
+    cudaSupport = true;
+    gpuTargets = [ gpuArchNum ];
+  # 2. Customize build (CPU flags, metadata, etc.)
+  }).overrideAttrs (oldAttrs: {
+    pname = "pytorch-python313-cuda12_8-sm120-avx512";
 
-  src = fetchFromGitHub {
-    owner = "pytorch";
-    repo = "pytorch";
-    rev = "v2.9.1";
-    hash = "sha256-MYzzceoQh01jzQU9tyAl47PU4M+QbuKwHXQAE8yt1Hg=";
-    fetchSubmodules = true;
-  };
+    # Set CPU optimization flags
+    # GPU architecture is handled by nixpkgs via gpuTargets parameter
+    preConfigure = (oldAttrs.preConfigure or "") + ''
+      # CPU optimizations via compiler flags
+      export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
+      export CFLAGS="$CFLAGS ${lib.concatStringsSep " " cpuFlags}"
 
-  # Override patches - PyTorch 2.9.1 doesn't need 2.8.0 patches
-
-  # Override postPatch - skip the setuptools replacement that doesn't apply to 2.9.1
-  postPatch = ''
-    # Add necessary postPatch commands for PyTorch 2.9.1 if needed
-  '';
-  patches = [];
-
-  # Override build configuration
-  buildInputs = oldAttrs.buildInputs ++ [
-    cudaPackages_12.cuda_cudart
-    cudaPackages_12.libcublas
-    cudaPackages_12.libcufft
-    cudaPackages_12.libcurand
-    cudaPackages_12.libcusolver
-    cudaPackages_12.libcusparse
-    cudaPackages_12.cudnn
-    # Explicitly add dynamic OpenBLAS for host-side operations
-    (openblas.override {
-      blas64 = false;
-      singleThreaded = false;
-    })
-  ];
-
-  nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [
-    addDriverRunpath
-  ];
-
-  # Set CUDA architecture and CPU optimization flags
-  preConfigure = (oldAttrs.preConfigure or "") + ''
-    export TORCH_CUDA_ARCH_LIST="${gpuArchSM}"
-    export TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
-
-    # CPU optimizations via compiler flags
-    export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
-    export CFLAGS="$CFLAGS ${lib.concatStringsSep " " cpuFlags}"
-
-    # Enable cuBLAS
-    export USE_CUBLAS=1
-    export USE_CUDA=1
-
-    # Optimize for target architecture
-    export CMAKE_CUDA_ARCHITECTURES="${lib.removePrefix "sm_" gpuArchSM}"
-
-    echo "========================================="
-    echo "PyTorch 2.9.1 Build Configuration"
-    echo "========================================="
-    echo "GPU Target: ${gpuArchSM} (NVIDIA Blackwell - RTX 5090)"
-    echo "CPU Features: AVX-512"
-    echo "CUDA: 12.8 with cuBLAS"
-    echo "TORCH_CUDA_ARCH_LIST: $TORCH_CUDA_ARCH_LIST"
-    echo "CXXFLAGS: $CXXFLAGS"
-    echo "========================================="
-  '';
+      echo "========================================="
+      echo "PyTorch Build Configuration"
+      echo "========================================="
+      echo "GPU Target: ${gpuArchNum} (Blackwell: RTX 5090)"
+      echo "CPU Features: AVX-512"
+      echo "CUDA: Enabled (cudaSupport=true, gpuTargets=[${gpuArchNum}])"
+      echo "CXXFLAGS: $CXXFLAGS"
+      echo "========================================="
+    '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch 2.9.1 optimized for NVIDIA Blackwell (RTX 5090) with AVX-512";
+    description = "PyTorch for NVIDIA RTX 5090 (SM120, Blackwell) + AVX-512";
     longDescription = ''
-      Custom PyTorch 2.9.1 build with targeted optimizations:
-      - GPU: NVIDIA Blackwell (RTX 5090) - SM120
+      Custom PyTorch build with targeted optimizations:
+      - GPU: NVIDIA Blackwell architecture (SM120) - RTX 5090
       - CPU: x86-64 with AVX-512 instruction set
-      - CUDA: 12.8
-      - BLAS: cuBLAS for GPU operations, OpenBLAS for host-side
+      - CUDA: 12.8 with compute capability 12.0
+      - BLAS: cuBLAS for GPU operations
       - Python: 3.13
+
+      Hardware requirements:
+      - GPU: RTX 5090, Blackwell architecture GPUs
+      - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+)
+      - Driver: NVIDIA 570+ required
+
+      Choose this if: You have RTX 5090 GPU + AVX-512 CPU for general
+      workloads.
     '';
     platforms = [ "x86_64-linux" ];
   };
