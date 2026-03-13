@@ -57,6 +57,9 @@ echo "CPU-only variants:"
 echo "  pytorch-python313-cpu-avx2                # Broad compatibility"
 echo "  pytorch-python313-cpu-avx512              # Modern CPUs"
 echo ""
+echo "macOS variants:"
+echo "  pytorch-python313-darwin-mps              # Apple Silicon (M1/M2/M3/M4)"
+echo ""
 echo "Note: CUDA 13.0 requires --stability=unstable flag"
 echo "========================================="
 '''
@@ -97,4 +100,4 @@ export -f list_variants
 '''
 
 [options]
-systems = ["x86_64-linux", "aarch64-linux"]
+systems = ["x86_64-linux", "aarch64-linux", "aarch64-darwin"]
