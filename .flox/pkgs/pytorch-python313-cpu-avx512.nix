@@ -1,5 +1,5 @@
 # PyTorch CPU-only optimized for AVX-512
-# Package name: pytorch-python311-cpu-avx512
+# Package name: pytorch-python313-cpu-avx512
 
 { pkgs ? import <nixpkgs> {} }:
 
@@ -25,8 +25,8 @@ let
   # Note: Official PyTorch binaries bundle MKL, but OpenBLAS is open-source
   blasBackend = nixpkgs_pinned.openblas;
 
-in nixpkgs_pinned.python311Packages.torch.overrideAttrs (oldAttrs: {
-  pname = "pytorch-python311-cpu-avx512";
+in nixpkgs_pinned.python313Packages.torch.overrideAttrs (oldAttrs: {
+  pname = "pytorch-python313-cpu-avx512";
 
     # Limit build parallelism to prevent memory saturation
     ninjaFlags = [ "-j32" ];

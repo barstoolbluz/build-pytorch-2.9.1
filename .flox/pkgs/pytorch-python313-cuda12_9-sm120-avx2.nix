@@ -1,5 +1,5 @@
-# PyTorch optimized for NVIDIA Blackwell Datacenter (SM100: B100, B200) + AVX-512
-# Package name: pytorch-python311-cuda12_9-sm100-avx512
+# PyTorch optimized for NVIDIA Blackwell (SM120: RTX 5090) + AVX2
+# Package name: pytorch-python313-cuda12_9-sm120-avx2
 
 { pkgs ? import <nixpkgs> {} }:
 
@@ -16,32 +16,30 @@ let
       (final: prev: { cudaPackages = final.cudaPackages_12_9; })
     ];
   };
-  # GPU target: SM100 (Blackwell datacenter architecture - B100, B200)
-  gpuArchNum = "100";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
-  gpuArchSM = "10.0";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
+  # GPU target: SM120 (Blackwell architecture - RTX 5090)
+  # PyTorch's CMake accepts numeric format (12.0) not sm_120
+  gpuArchNum = "12.0";
 
-  # CPU optimization: AVX-512
+  # CPU optimization: AVX2 (broader compatibility)
   cpuFlags = [
-    "-mavx512f"    # AVX-512 Foundation
-    "-mavx512dq"   # Doubleword and Quadword instructions
-    "-mavx512vl"   # Vector Length extensions
-    "-mavx512bw"   # Byte and Word instructions
+    "-mavx2"       # AVX2 instructions
     "-mfma"        # Fused multiply-add
+    "-mf16c"       # Half-precision conversions
   ];
 
 in
   # Two-stage override:
   # 1. Enable CUDA and specify GPU targets
-  (nixpkgs_pinned.python311Packages.torch.override {
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
-    gpuTargets = [ gpuArchSM ];
+    gpuTargets = [ gpuArchNum ];
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python311-cuda12_9-sm100-avx512";
+    pname = "pytorch-python313-cuda12_9-sm120-avx2";
     passthru = oldAttrs.passthru // {
-      gpuArch = gpuArchSM;
+      gpuArch = gpuArchNum;
       blasProvider = "cublas";
-      cpuISA = "avx512";
+      cpuISA = "avx2";
     };
 
     # Limit build parallelism to prevent memory saturation
@@ -58,32 +56,34 @@ in
       echo "========================================="
       echo "PyTorch Build Configuration"
       echo "========================================="
-      echo "GPU Target: ${gpuArchSM} (Blackwell Datacenter: B100, B200)"
-      echo "CPU Features: AVX-512"
-      echo "CUDA: 12.9 (cudaSupport=true, gpuTargets=[${gpuArchSM}])"
+      echo "GPU Target: ${gpuArchNum} (Blackwell: RTX 5090)"
+      echo "CPU Features: AVX2 (broad compatibility)"
+      echo "CUDA: 12.9 (cudaSupport=true, gpuTargets=[${gpuArchNum}])"
       echo "CXXFLAGS: $CXXFLAGS"
       echo "========================================="
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA B100/B200 (SM100, Blackwell DC) + AVX-512";
+      description = "PyTorch for NVIDIA RTX 5090 (SM120, Blackwell) with CUDA";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
-        - GPU: NVIDIA Blackwell datacenter architecture (SM100) - B100, B200
-        - CPU: x86-64 with AVX-512 instruction set
-        - CUDA: 12.9 with compute capability 10.0
+        - GPU: NVIDIA Blackwell architecture (SM120) - RTX 5090
+        - CPU: x86-64 with AVX2 instruction set (broad compatibility)
+        - CUDA: 12.9 with compute capability 12.0
         - BLAS: cuBLAS for GPU operations
         - Python: 3.11
 
         Hardware requirements:
-        - GPU: B100, B200, or other SM100 GPUs
-        - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+)
-        - Driver: NVIDIA 550+ required
+        - GPU: RTX 5090, Blackwell architecture GPUs
+        - CPU: Intel Haswell+ (2013+), AMD Zen 1+ (2017+)
+        - Driver: NVIDIA 570+ required
 
-        Choose this if: You have B100 or B200 datacenter GPU + AVX-512 CPU for
-        general workloads. For specialized CPU workloads, consider avx512bf16
-        (BF16 training) or avx512vnni (INT8 inference) variants instead.
+        ⚠️  IMPORTANT: SM120 (Blackwell) support was added in PyTorch 2.7
+
+        Choose this if: You have RTX 5090 GPU and want maximum CPU compatibility
+        with AVX2. For specialized CPU workloads, consider avx512 (general),
+        avx512bf16 (BF16 training), or avx512vnni (INT8 inference) variants.
       '';
       platforms = [ "x86_64-linux" ];
     };
-  })
+})

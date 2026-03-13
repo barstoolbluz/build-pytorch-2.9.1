@@ -1,5 +1,5 @@
-# PyTorch optimized for NVIDIA Ampere Datacenter (SM80: A100, A30) + AVX2
-# Package name: pytorch-python311-cuda12_9-sm80-avx2
+# PyTorch optimized for NVIDIA Ada Lovelace (SM89: RTX 4090, L40) + AVX-512
+# Package name: pytorch-python313-cuda12_9-sm89-avx512
 
 { pkgs ? import <nixpkgs> {} }:
 
@@ -16,30 +16,32 @@ let
       (final: prev: { cudaPackages = final.cudaPackages_12_9; })
     ];
   };
-  # GPU target: SM80 (Ampere datacenter architecture - A100, A30)
-  gpuArchNum = "80";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
-  gpuArchSM = "8.0";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
+  # GPU target: SM89 (Ada Lovelace architecture - RTX 4090, L40)
+  gpuArchNum = "89";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
+  gpuArchSM = "8.9";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
 
-  # CPU optimization: AVX2 (broader compatibility)
+  # CPU optimization: AVX-512
   cpuFlags = [
-    "-mavx2"       # AVX2 instructions
+    "-mavx512f"    # AVX-512 Foundation
+    "-mavx512dq"   # Doubleword and Quadword instructions
+    "-mavx512vl"   # Vector Length extensions
+    "-mavx512bw"   # Byte and Word instructions
     "-mfma"        # Fused multiply-add
-    "-mf16c"       # Half-precision conversions
   ];
 
 in
   # Two-stage override:
   # 1. Enable CUDA and specify GPU targets
-  (nixpkgs_pinned.python311Packages.torch.override {
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
     gpuTargets = [ gpuArchSM ];
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python311-cuda12_9-sm80-avx2";
+    pname = "pytorch-python313-cuda12_9-sm89-avx512";
     passthru = oldAttrs.passthru // {
       gpuArch = gpuArchSM;
       blasProvider = "cublas";
-      cpuISA = "avx2";
+      cpuISA = "avx512";
     };
 
     # Limit build parallelism to prevent memory saturation
@@ -56,31 +58,31 @@ in
       echo "========================================="
       echo "PyTorch Build Configuration"
       echo "========================================="
-      echo "GPU Target: ${gpuArchSM} (Ampere Datacenter: A100, A30)"
-      echo "CPU Features: AVX2 (broad compatibility)"
+      echo "GPU Target: ${gpuArchSM} (Ada: RTX 4090, L40)"
+      echo "CPU Features: AVX-512"
       echo "CUDA: 12.9 (cudaSupport=true, gpuTargets=[${gpuArchSM}])"
       echo "CXXFLAGS: $CXXFLAGS"
       echo "========================================="
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA A100/A30 (SM80, Ampere) with AVX2";
+      description = "PyTorch for NVIDIA RTX 4090/L40 (SM89, Ada) + AVX-512";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
-        - GPU: NVIDIA Ampere datacenter architecture (SM80) - A100, A30
-        - CPU: x86-64 with AVX2 instruction set (broad compatibility)
-        - CUDA: 12.9 with compute capability 8.0
+        - GPU: NVIDIA Ada Lovelace architecture (SM89) - RTX 4090, RTX 4080, L40, L40S
+        - CPU: x86-64 with AVX-512 instruction set
+        - CUDA: 12.9 with compute capability 8.9
         - BLAS: cuBLAS for GPU operations
         - Python: 3.11
 
         Hardware requirements:
-        - GPU: A100 (40GB/80GB), A30, or other SM80 GPUs
-        - CPU: Intel Haswell+ (2013+), AMD Zen 1+ (2017+)
-        - Driver: NVIDIA 450+ required
+        - GPU: RTX 4090, RTX 4080, RTX 4070 Ti, RTX 4070, RTX 4060 Ti, L40, or other SM89 GPUs
+        - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+)
+        - Driver: NVIDIA 520+ required
 
-        Choose this if: You have A100 or A30 datacenter GPU and want maximum CPU
-        compatibility with AVX2. For specialized CPU workloads, consider avx512
-        (general), avx512bf16 (BF16 training), or avx512vnni (INT8 inference).
+        Choose this if: You have RTX 4090 or RTX 40x0 series GPU + AVX-512 CPU for
+        general workloads. For specialized CPU workloads, consider avx512bf16
+        (BF16 training) or avx512vnni (INT8 inference) variants instead.
       '';
       platforms = [ "x86_64-linux" ];
     };

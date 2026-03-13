@@ -1,5 +1,5 @@
-# PyTorch optimized for NVIDIA Blackwell (SM120: RTX 5090) + AVX-512
-# Package name: pytorch-python311-cuda12_9-sm120-avx512
+# PyTorch optimized for NVIDIA Turing (SM75: T4, RTX 2080 Ti) + AVX-512
+# Package name: pytorch-python313-cuda12_9-sm75-avx512
 
 { pkgs ? import <nixpkgs> {} }:
 
@@ -16,9 +16,9 @@ let
       (final: prev: { cudaPackages = final.cudaPackages_12_9; })
     ];
   };
-  # GPU target: SM120 (Blackwell architecture - RTX 5090)
-  # PyTorch's CMake accepts numeric format (12.0) not sm_120
-  gpuArchNum = "12.0";
+  # GPU target: SM75 (Turing architecture - T4, RTX 2080 Ti)
+  gpuArchNum = "75";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
+  gpuArchSM = "7.5";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
 
   # CPU optimization: AVX-512
   cpuFlags = [
@@ -30,16 +30,16 @@ let
   ];
 
 in
-  # Two-stage override:
-  # 1. Enable CUDA and specify GPU targets
-  (nixpkgs_pinned.python311Packages.torch.override {
+  # First, enable CUDA support via override
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
-    gpuTargets = [ gpuArchNum ];
-  # 2. Customize build (CPU flags, metadata, etc.)
+    # Specify GPU targets using nixpkgs parameter
+    gpuTargets = [ gpuArchSM ];
+    # cudaPackages is automatically passed and uses the one from inputs
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python311-cuda12_9-sm120-avx512";
+    pname = "pytorch-python313-cuda12_9-sm75-avx512";
     passthru = oldAttrs.passthru // {
-      gpuArch = gpuArchNum;
+      gpuArch = gpuArchSM;
       blasProvider = "cublas";
       cpuISA = "avx512";
     };
@@ -58,34 +58,31 @@ in
       echo "========================================="
       echo "PyTorch Build Configuration"
       echo "========================================="
-      echo "GPU Target: ${gpuArchNum} (Blackwell: RTX 5090)"
+      echo "GPU Target: ${gpuArchSM} (Turing: T4, RTX 2080 Ti)"
       echo "CPU Features: AVX-512"
-      echo "CUDA: 12.9 (cudaSupport=true, gpuTargets=[${gpuArchNum}])"
+      echo "CUDA: 12.9 (cudaSupport=true, gpuTargets=[${gpuArchSM}])"
       echo "CXXFLAGS: $CXXFLAGS"
       echo "========================================="
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA RTX 5090 (SM120, Blackwell) + AVX-512";
+      description = "PyTorch for NVIDIA T4/RTX 2080 Ti (SM75, Turing) with AVX-512";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
-        - GPU: NVIDIA Blackwell architecture (SM120) - RTX 5090
+        - GPU: NVIDIA Turing architecture (SM75) - T4, RTX 2080 Ti, Quadro RTX 8000
         - CPU: x86-64 with AVX-512 instruction set
-        - CUDA: 12.9 with compute capability 12.0
+        - CUDA: 12.9 with compute capability 7.5
         - BLAS: cuBLAS for GPU operations
         - Python: 3.11
 
         Hardware requirements:
-        - GPU: RTX 5090, Blackwell architecture GPUs
-        - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+)
-        - Driver: NVIDIA 570+ required
+        - GPU: T4, RTX 2080 Ti, RTX 2080, Quadro RTX 8000, or other SM75 GPUs
+        - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+) with AVX-512
+        - Driver: NVIDIA 418+ required
 
-        ⚠️  IMPORTANT: SM120 (Blackwell) support was added in PyTorch 2.7
-
-        Choose this if: You have RTX 5090 GPU + AVX-512 CPU for general
-        workloads. For specialized CPU workloads, consider avx512bf16
-        (BF16 training) or avx512vnni (INT8 inference) variants instead.
+        Choose this if: You have T4/RTX 2080 Ti GPU with AVX-512 CPUs
+        and need optimized kernels for Turing architecture.
       '';
       platforms = [ "x86_64-linux" ];
     };
-})
+  })

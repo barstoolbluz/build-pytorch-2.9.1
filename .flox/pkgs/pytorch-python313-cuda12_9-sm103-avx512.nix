@@ -1,5 +1,5 @@
 # PyTorch optimized for NVIDIA Blackwell B300 Datacenter (SM103: B300) + AVX-512
-# Package name: pytorch-python311-cuda12_9-sm103-avx512
+# Package name: pytorch-python313-cuda12_9-sm103-avx512
 
 { pkgs ? import <nixpkgs> {} }:
 
@@ -28,11 +28,11 @@ let
   ];
 
 in
-  (nixpkgs_pinned.python311Packages.torch.override {
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
     gpuTargets = [ gpuArchSM ];
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python311-cuda12_9-sm103-avx512";
+    pname = "pytorch-python313-cuda12_9-sm103-avx512";
     passthru = oldAttrs.passthru // {
       gpuArch = gpuArchSM;
       blasProvider = "cublas";

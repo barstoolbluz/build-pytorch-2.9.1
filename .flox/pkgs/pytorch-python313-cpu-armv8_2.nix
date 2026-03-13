@@ -1,5 +1,8 @@
-# PyTorch CPU-only optimized for AVX2
-# Package name: pytorch-python311-cpu-avx2
+# PyTorch CPU-only optimized for ARMv8.2
+# Package name: pytorch-python313-cpu-armv8_2
+#
+# ARM server build for AWS Graviton2, general ARM servers
+# Hardware: ARM Neoverse N1, Cortex-A75+, Graviton2
 
 { pkgs ? import <nixpkgs> {} }:
 
@@ -12,19 +15,16 @@ let
       allowUnfree = true;
     };
   };
-  # CPU optimization: AVX2 (no GPU)
+  # CPU optimization: ARMv8.2-A with FP16 and dot product
   cpuFlags = [
-    "-mavx2"       # AVX2 instructions
-    "-mfma"        # Fused multiply-add
-    "-mf16c"       # Half-precision conversions
+    "-march=armv8.2-a+fp16+dotprod"  # ARMv8.2 with half-precision and dot product
   ];
 
-  # Use OpenBLAS for CPU linear algebra (or could use MKL)
-  # Note: Official PyTorch binaries bundle MKL, but OpenBLAS is open-source
+  # Use OpenBLAS for CPU linear algebra
   blasBackend = nixpkgs_pinned.openblas;
 
-in nixpkgs_pinned.python311Packages.torch.overrideAttrs (oldAttrs: {
-  pname = "pytorch-python311-cpu-avx2";
+in nixpkgs_pinned.python313Packages.torch.overrideAttrs (oldAttrs: {
+  pname = "pytorch-python313-cpu-armv8_2";
 
     # Limit build parallelism to prevent memory saturation
     ninjaFlags = [ "-j32" ];
@@ -34,7 +34,7 @@ in nixpkgs_pinned.python311Packages.torch.overrideAttrs (oldAttrs: {
   passthru = oldAttrs.passthru // {
     gpuArch = null;
     blasProvider = "openblas";
-    cpuISA = "avx2";
+    cpuISA = "armv8_2";
   };
 
   # Override build configuration - remove CUDA deps, ensure BLAS
@@ -68,29 +68,32 @@ in nixpkgs_pinned.python311Packages.torch.overrideAttrs (oldAttrs: {
     echo "PyTorch Build Configuration"
     echo "========================================="
     echo "GPU Target: None (CPU-only build)"
-    echo "CPU Features: AVX2"
+    echo "CPU Architecture: ARMv8.2-A with FP16 and dot product"
     echo "BLAS Backend: OpenBLAS"
     echo "CUDA: Disabled"
     echo "CXXFLAGS: $CXXFLAGS"
+    echo ""
+    echo "Hardware support: ARM Neoverse N1, Cortex-A75+, AWS Graviton2"
+    echo "Use case: General ARM server deployments (CPU-only)"
     echo "========================================="
   '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch CPU-only optimized for AVX2";
+      description = "PyTorch CPU-only optimized for ARMv8.2 (Graviton2, ARM servers)";
       longDescription = ''
         Custom PyTorch build for CPU-only workloads:
         - GPU: None (CPU-only)
-        - CPU: x86-64 with AVX2 instruction set
+        - CPU: ARMv8.2-A with FP16 and dot product instructions
         - BLAS: OpenBLAS for CPU linear algebra operations
         - Python: 3.11
 
         Hardware support:
-        - CPU: Intel Haswell+ (2013+), AMD Zen 1+ (2017+)
+        - CPU: ARM Neoverse N1, Cortex-A75+, AWS Graviton2
 
-        Choose this if: You need CPU-only PyTorch on older hardware without
-        AVX-512 support, or want maximum compatibility across x86-64 systems.
-        Good for development, testing, and inference on commodity hardware.
+        Choose this if: You need CPU-only PyTorch on ARM servers like
+        AWS Graviton2, or general ARMv8.2 hardware. For newer ARM servers
+        with ARMv9/SVE2 support (Graviton3+, Grace), use armv9 variant instead.
       '';
-      platforms = [ "x86_64-linux" "aarch64-linux" ];
+      platforms = [ "aarch64-linux" ];
     };
 })

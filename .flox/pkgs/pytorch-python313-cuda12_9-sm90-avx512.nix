@@ -1,5 +1,5 @@
-# PyTorch optimized for NVIDIA Turing (SM75: T4, RTX 2080 Ti) + AVX-512
-# Package name: pytorch-python311-cuda12_9-sm75-avx512
+# PyTorch optimized for NVIDIA Hopper (SM90: H100, L40S) + AVX-512
+# Package name: pytorch-python313-cuda12_9-sm90-avx512
 
 { pkgs ? import <nixpkgs> {} }:
 
@@ -16,9 +16,9 @@ let
       (final: prev: { cudaPackages = final.cudaPackages_12_9; })
     ];
   };
-  # GPU target: SM75 (Turing architecture - T4, RTX 2080 Ti)
-  gpuArchNum = "75";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
-  gpuArchSM = "7.5";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
+  # GPU target: SM90 (Hopper architecture - H100, L40S)
+  gpuArchNum = "90";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
+  gpuArchSM = "9.0";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
 
   # CPU optimization: AVX-512
   cpuFlags = [
@@ -31,13 +31,13 @@ let
 
 in
   # First, enable CUDA support via override
-  (nixpkgs_pinned.python311Packages.torch.override {
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
     # Specify GPU targets using nixpkgs parameter
     gpuTargets = [ gpuArchSM ];
     # cudaPackages is automatically passed and uses the one from inputs
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python311-cuda12_9-sm75-avx512";
+    pname = "pytorch-python313-cuda12_9-sm90-avx512";
     passthru = oldAttrs.passthru // {
       gpuArch = gpuArchSM;
       blasProvider = "cublas";
@@ -58,7 +58,7 @@ in
       echo "========================================="
       echo "PyTorch Build Configuration"
       echo "========================================="
-      echo "GPU Target: ${gpuArchSM} (Turing: T4, RTX 2080 Ti)"
+      echo "GPU Target: ${gpuArchSM} (Hopper: H100, L40S)"
       echo "CPU Features: AVX-512"
       echo "CUDA: 12.9 (cudaSupport=true, gpuTargets=[${gpuArchSM}])"
       echo "CXXFLAGS: $CXXFLAGS"
@@ -66,22 +66,23 @@ in
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA T4/RTX 2080 Ti (SM75, Turing) with AVX-512";
+      description = "PyTorch for NVIDIA H100/L40S (SM90, Hopper) with CUDA";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
-        - GPU: NVIDIA Turing architecture (SM75) - T4, RTX 2080 Ti, Quadro RTX 8000
+        - GPU: NVIDIA Hopper architecture (SM90) - H100, L40S
         - CPU: x86-64 with AVX-512 instruction set
-        - CUDA: 12.9 with compute capability 7.5
+        - CUDA: 12.9 with compute capability 9.0
         - BLAS: cuBLAS for GPU operations
         - Python: 3.11
 
         Hardware requirements:
-        - GPU: T4, RTX 2080 Ti, RTX 2080, Quadro RTX 8000, or other SM75 GPUs
+        - GPU: H100, H200, L40S, or other SM90 GPUs
         - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+) with AVX-512
-        - Driver: NVIDIA 418+ required
+        - Driver: NVIDIA 525+ required
 
-        Choose this if: You have T4/RTX 2080 Ti GPU with AVX-512 CPUs
-        and need optimized kernels for Turing architecture.
+        Choose this if: You have H100/L40S datacenter GPUs with AVX-512 CPUs
+        and need optimized kernels for Hopper architecture. For RTX 5090, use
+        sm120 builds instead.
       '';
       platforms = [ "x86_64-linux" ];
     };

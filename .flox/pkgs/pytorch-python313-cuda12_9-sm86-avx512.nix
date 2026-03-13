@@ -1,5 +1,5 @@
-# PyTorch optimized for NVIDIA Ampere Datacenter (SM80: A100, A30) + AVX-512
-# Package name: pytorch-python311-cuda12_9-sm80-avx512
+# PyTorch optimized for NVIDIA Ampere (SM86: RTX 3090, A5000, A40) + AVX-512
+# Package name: pytorch-python313-cuda12_9-sm86-avx512
 
 { pkgs ? import <nixpkgs> {} }:
 
@@ -16,9 +16,9 @@ let
       (final: prev: { cudaPackages = final.cudaPackages_12_9; })
     ];
   };
-  # GPU target: SM80 (Ampere datacenter architecture - A100, A30)
-  gpuArchNum = "80";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
-  gpuArchSM = "8.0";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
+  # GPU target: SM86 (Ampere architecture - RTX 3090, A5000, A40)
+  # PyTorch's CMake accepts numeric format (8.6) not sm_86
+  gpuArchNum = "8.6";
 
   # CPU optimization: AVX-512
   cpuFlags = [
@@ -32,14 +32,14 @@ let
 in
   # Two-stage override:
   # 1. Enable CUDA and specify GPU targets
-  (nixpkgs_pinned.python311Packages.torch.override {
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
-    gpuTargets = [ gpuArchSM ];
+    gpuTargets = [ gpuArchNum ];
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python311-cuda12_9-sm80-avx512";
+    pname = "pytorch-python313-cuda12_9-sm86-avx512";
     passthru = oldAttrs.passthru // {
-      gpuArch = gpuArchSM;
+      gpuArch = gpuArchNum;
       blasProvider = "cublas";
       cpuISA = "avx512";
     };
@@ -58,29 +58,29 @@ in
       echo "========================================="
       echo "PyTorch Build Configuration"
       echo "========================================="
-      echo "GPU Target: ${gpuArchSM} (Ampere Datacenter: A100, A30)"
+      echo "GPU Target: ${gpuArchNum} (Ampere: RTX 3090, A5000, A40)"
       echo "CPU Features: AVX-512"
-      echo "CUDA: 12.9 (cudaSupport=true, gpuTargets=[${gpuArchSM}])"
+      echo "CUDA: 12.9 (cudaSupport=true, gpuTargets=[${gpuArchNum}])"
       echo "CXXFLAGS: $CXXFLAGS"
       echo "========================================="
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA A100/A30 (SM80, Ampere) + AVX-512";
+      description = "PyTorch for NVIDIA RTX 3090/A40 (SM86, Ampere) + AVX-512";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
-        - GPU: NVIDIA Ampere datacenter architecture (SM80) - A100, A30
+        - GPU: NVIDIA Ampere architecture (SM86) - RTX 3090, A5000, A40
         - CPU: x86-64 with AVX-512 instruction set
-        - CUDA: 12.9 with compute capability 8.0
+        - CUDA: 12.9 with compute capability 8.6
         - BLAS: cuBLAS for GPU operations
         - Python: 3.11
 
         Hardware requirements:
-        - GPU: A100 (40GB/80GB), A30, or other SM80 GPUs
+        - GPU: RTX 3090, RTX 3080 Ti, A5000, A40, or other SM86 GPUs
         - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+)
-        - Driver: NVIDIA 450+ required
+        - Driver: NVIDIA 470+ required
 
-        Choose this if: You have A100 or A30 datacenter GPU + AVX-512 CPU for
+        Choose this if: You have RTX 3090/A40-class GPU + AVX-512 CPU for
         general workloads. For specialized CPU workloads, consider avx512bf16
         (BF16 training) or avx512vnni (INT8 inference) variants instead.
       '';

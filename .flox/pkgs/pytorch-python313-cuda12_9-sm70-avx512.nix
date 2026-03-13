@@ -1,5 +1,5 @@
-# PyTorch optimized for NVIDIA Ampere (SM86: RTX 3090, A5000, A40) + AVX-512
-# Package name: pytorch-python311-cuda12_9-sm86-avx512
+# PyTorch optimized for NVIDIA Volta (SM70: V100, Titan V) + AVX-512
+# Package name: pytorch-python313-cuda12_9-sm70-avx512
 
 { pkgs ? import <nixpkgs> {} }:
 
@@ -16,9 +16,9 @@ let
       (final: prev: { cudaPackages = final.cudaPackages_12_9; })
     ];
   };
-  # GPU target: SM86 (Ampere architecture - RTX 3090, A5000, A40)
-  # PyTorch's CMake accepts numeric format (8.6) not sm_86
-  gpuArchNum = "8.6";
+  # GPU target: SM70 (Volta architecture - V100, Titan V)
+  gpuArchNum = "70";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
+  gpuArchSM = "7.0";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
 
   # CPU optimization: AVX-512
   cpuFlags = [
@@ -30,16 +30,16 @@ let
   ];
 
 in
-  # Two-stage override:
-  # 1. Enable CUDA and specify GPU targets
-  (nixpkgs_pinned.python311Packages.torch.override {
+  # First, enable CUDA support via override
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
-    gpuTargets = [ gpuArchNum ];
-  # 2. Customize build (CPU flags, metadata, etc.)
+    # Specify GPU targets using nixpkgs parameter
+    gpuTargets = [ gpuArchSM ];
+    # cudaPackages is automatically passed and uses the one from inputs
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python311-cuda12_9-sm86-avx512";
+    pname = "pytorch-python313-cuda12_9-sm70-avx512";
     passthru = oldAttrs.passthru // {
-      gpuArch = gpuArchNum;
+      gpuArch = gpuArchSM;
       blasProvider = "cublas";
       cpuISA = "avx512";
     };
@@ -55,34 +55,38 @@ in
       export CFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CFLAGS"
       export MAX_JOBS=32
 
+      # cuDNN 9.11+ dropped SM < 7.5 support — disable for SM70
+      export USE_CUDNN=0
+
       echo "========================================="
       echo "PyTorch Build Configuration"
       echo "========================================="
-      echo "GPU Target: ${gpuArchNum} (Ampere: RTX 3090, A5000, A40)"
+      echo "GPU Target: ${gpuArchSM} (Volta: V100, Titan V)"
       echo "CPU Features: AVX-512"
-      echo "CUDA: 12.9 (cudaSupport=true, gpuTargets=[${gpuArchNum}])"
+      echo "CUDA: 12.9 (cudaSupport=true, gpuTargets=[${gpuArchSM}])"
       echo "CXXFLAGS: $CXXFLAGS"
       echo "========================================="
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA RTX 3090/A40 (SM86, Ampere) + AVX-512";
+      description = "PyTorch for NVIDIA V100/Titan V (SM70, Volta) with AVX-512";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
-        - GPU: NVIDIA Ampere architecture (SM86) - RTX 3090, A5000, A40
+        - GPU: NVIDIA Volta architecture (SM70) - V100, Titan V
         - CPU: x86-64 with AVX-512 instruction set
-        - CUDA: 12.9 with compute capability 8.6
+        - CUDA: 12.9 with compute capability 7.0
         - BLAS: cuBLAS for GPU operations
         - Python: 3.11
 
         Hardware requirements:
-        - GPU: RTX 3090, RTX 3080 Ti, A5000, A40, or other SM86 GPUs
-        - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+)
-        - Driver: NVIDIA 470+ required
+        - GPU: V100, Titan V, or other SM70 GPUs
+        - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+) with AVX-512
+        - Driver: NVIDIA 396+ required
 
-        Choose this if: You have RTX 3090/A40-class GPU + AVX-512 CPU for
-        general workloads. For specialized CPU workloads, consider avx512bf16
-        (BF16 training) or avx512vnni (INT8 inference) variants instead.
+        Note: cuDNN is disabled because cuDNN 9.11+ dropped SM < 7.5 support.
+
+        Choose this if: You have V100/Titan V GPU with AVX-512 CPUs
+        and need optimized kernels for Volta architecture.
       '';
       platforms = [ "x86_64-linux" ];
     };

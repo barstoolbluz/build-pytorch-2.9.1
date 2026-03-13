@@ -1,5 +1,5 @@
-# PyTorch optimized for NVIDIA Hopper (SM90: H100, L40S) + AVX-512
-# Package name: pytorch-python311-cuda12_9-sm90-avx512
+# PyTorch optimized for NVIDIA Ada Lovelace (SM89: RTX 4090, L40) + AVX2
+# Package name: pytorch-python313-cuda12_9-sm89-avx2
 
 { pkgs ? import <nixpkgs> {} }:
 
@@ -16,32 +16,30 @@ let
       (final: prev: { cudaPackages = final.cudaPackages_12_9; })
     ];
   };
-  # GPU target: SM90 (Hopper architecture - H100, L40S)
-  gpuArchNum = "90";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
-  gpuArchSM = "9.0";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
+  # GPU target: SM89 (Ada Lovelace architecture - RTX 4090, L40)
+  gpuArchNum = "89";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
+  gpuArchSM = "8.9";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
 
-  # CPU optimization: AVX-512
+  # CPU optimization: AVX2 (broader compatibility)
   cpuFlags = [
-    "-mavx512f"    # AVX-512 Foundation
-    "-mavx512dq"   # Doubleword and Quadword instructions
-    "-mavx512vl"   # Vector Length extensions
-    "-mavx512bw"   # Byte and Word instructions
+    "-mavx2"       # AVX2 instructions
     "-mfma"        # Fused multiply-add
+    "-mf16c"       # Half-precision conversions
   ];
 
 in
-  # First, enable CUDA support via override
-  (nixpkgs_pinned.python311Packages.torch.override {
+  # Two-stage override:
+  # 1. Enable CUDA and specify GPU targets
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
-    # Specify GPU targets using nixpkgs parameter
     gpuTargets = [ gpuArchSM ];
-    # cudaPackages is automatically passed and uses the one from inputs
+  # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python311-cuda12_9-sm90-avx512";
+    pname = "pytorch-python313-cuda12_9-sm89-avx2";
     passthru = oldAttrs.passthru // {
       gpuArch = gpuArchSM;
       blasProvider = "cublas";
-      cpuISA = "avx512";
+      cpuISA = "avx2";
     };
 
     # Limit build parallelism to prevent memory saturation
@@ -58,31 +56,31 @@ in
       echo "========================================="
       echo "PyTorch Build Configuration"
       echo "========================================="
-      echo "GPU Target: ${gpuArchSM} (Hopper: H100, L40S)"
-      echo "CPU Features: AVX-512"
+      echo "GPU Target: ${gpuArchSM} (Ada: RTX 4090, L40)"
+      echo "CPU Features: AVX2 (broad compatibility)"
       echo "CUDA: 12.9 (cudaSupport=true, gpuTargets=[${gpuArchSM}])"
       echo "CXXFLAGS: $CXXFLAGS"
       echo "========================================="
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA H100/L40S (SM90, Hopper) with CUDA";
+      description = "PyTorch for NVIDIA RTX 4090/L40 (SM89, Ada) with AVX2";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
-        - GPU: NVIDIA Hopper architecture (SM90) - H100, L40S
-        - CPU: x86-64 with AVX-512 instruction set
-        - CUDA: 12.9 with compute capability 9.0
+        - GPU: NVIDIA Ada Lovelace architecture (SM89) - RTX 4090, RTX 4080, L40, L40S
+        - CPU: x86-64 with AVX2 instruction set (broad compatibility)
+        - CUDA: 12.9 with compute capability 8.9
         - BLAS: cuBLAS for GPU operations
         - Python: 3.11
 
         Hardware requirements:
-        - GPU: H100, H200, L40S, or other SM90 GPUs
-        - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+) with AVX-512
-        - Driver: NVIDIA 525+ required
+        - GPU: RTX 4090, RTX 4080, RTX 4070 Ti, RTX 4070, RTX 4060 Ti, L40, or other SM89 GPUs
+        - CPU: Intel Haswell+ (2013+), AMD Zen 1+ (2017+)
+        - Driver: NVIDIA 520+ required
 
-        Choose this if: You have H100/L40S datacenter GPUs with AVX-512 CPUs
-        and need optimized kernels for Hopper architecture. For RTX 5090, use
-        sm120 builds instead.
+        Choose this if: You have RTX 4090 or RTX 40x0 series GPU and want maximum CPU
+        compatibility with AVX2. For specialized CPU workloads, consider avx512
+        (general), avx512bf16 (BF16 training), or avx512vnni (INT8 inference).
       '';
       platforms = [ "x86_64-linux" ];
     };

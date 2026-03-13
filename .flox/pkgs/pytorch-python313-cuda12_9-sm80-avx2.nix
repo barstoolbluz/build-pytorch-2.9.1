@@ -1,5 +1,5 @@
-# PyTorch optimized for NVIDIA Blackwell (SM120: RTX 5090) + AVX2
-# Package name: pytorch-python311-cuda12_9-sm120-avx2
+# PyTorch optimized for NVIDIA Ampere Datacenter (SM80: A100, A30) + AVX2
+# Package name: pytorch-python313-cuda12_9-sm80-avx2
 
 { pkgs ? import <nixpkgs> {} }:
 
@@ -16,9 +16,9 @@ let
       (final: prev: { cudaPackages = final.cudaPackages_12_9; })
     ];
   };
-  # GPU target: SM120 (Blackwell architecture - RTX 5090)
-  # PyTorch's CMake accepts numeric format (12.0) not sm_120
-  gpuArchNum = "12.0";
+  # GPU target: SM80 (Ampere datacenter architecture - A100, A30)
+  gpuArchNum = "80";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
+  gpuArchSM = "8.0";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
 
   # CPU optimization: AVX2 (broader compatibility)
   cpuFlags = [
@@ -30,14 +30,14 @@ let
 in
   # Two-stage override:
   # 1. Enable CUDA and specify GPU targets
-  (nixpkgs_pinned.python311Packages.torch.override {
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
-    gpuTargets = [ gpuArchNum ];
+    gpuTargets = [ gpuArchSM ];
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python311-cuda12_9-sm120-avx2";
+    pname = "pytorch-python313-cuda12_9-sm80-avx2";
     passthru = oldAttrs.passthru // {
-      gpuArch = gpuArchNum;
+      gpuArch = gpuArchSM;
       blasProvider = "cublas";
       cpuISA = "avx2";
     };
@@ -56,34 +56,32 @@ in
       echo "========================================="
       echo "PyTorch Build Configuration"
       echo "========================================="
-      echo "GPU Target: ${gpuArchNum} (Blackwell: RTX 5090)"
+      echo "GPU Target: ${gpuArchSM} (Ampere Datacenter: A100, A30)"
       echo "CPU Features: AVX2 (broad compatibility)"
-      echo "CUDA: 12.9 (cudaSupport=true, gpuTargets=[${gpuArchNum}])"
+      echo "CUDA: 12.9 (cudaSupport=true, gpuTargets=[${gpuArchSM}])"
       echo "CXXFLAGS: $CXXFLAGS"
       echo "========================================="
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA RTX 5090 (SM120, Blackwell) with CUDA";
+      description = "PyTorch for NVIDIA A100/A30 (SM80, Ampere) with AVX2";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
-        - GPU: NVIDIA Blackwell architecture (SM120) - RTX 5090
+        - GPU: NVIDIA Ampere datacenter architecture (SM80) - A100, A30
         - CPU: x86-64 with AVX2 instruction set (broad compatibility)
-        - CUDA: 12.9 with compute capability 12.0
+        - CUDA: 12.9 with compute capability 8.0
         - BLAS: cuBLAS for GPU operations
         - Python: 3.11
 
         Hardware requirements:
-        - GPU: RTX 5090, Blackwell architecture GPUs
+        - GPU: A100 (40GB/80GB), A30, or other SM80 GPUs
         - CPU: Intel Haswell+ (2013+), AMD Zen 1+ (2017+)
-        - Driver: NVIDIA 570+ required
+        - Driver: NVIDIA 450+ required
 
-        ⚠️  IMPORTANT: SM120 (Blackwell) support was added in PyTorch 2.7
-
-        Choose this if: You have RTX 5090 GPU and want maximum CPU compatibility
-        with AVX2. For specialized CPU workloads, consider avx512 (general),
-        avx512bf16 (BF16 training), or avx512vnni (INT8 inference) variants.
+        Choose this if: You have A100 or A30 datacenter GPU and want maximum CPU
+        compatibility with AVX2. For specialized CPU workloads, consider avx512
+        (general), avx512bf16 (BF16 training), or avx512vnni (INT8 inference).
       '';
       platforms = [ "x86_64-linux" ];
     };
-})
+  })
