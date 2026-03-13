@@ -5,6 +5,7 @@
 , lib
 , openblas
 , mkl
+, fetchFromGitHub
 }:
 
 let
@@ -20,10 +21,27 @@ let
   # Use OpenBLAS for CPU linear algebra
   blasBackend = openblas;
 
-in (python3Packages.torch.override {
+in (python3Packages.pytorch.override {
   cudaSupport = false;
 }).overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-cpu-avx512";
+  version = "2.9.1";
+
+  src = fetchFromGitHub {
+    owner = "pytorch";
+    repo = "pytorch";
+    rev = "v2.9.1";
+    hash = "sha256-MYzzceoQh01jzQU9tyAl47PU4M+QbuKwHXQAE8yt1Hg=";
+    fetchSubmodules = true;
+  };
+
+  # Override patches - PyTorch 2.9.1 doesn't need 2.8.0 patches
+
+  # Override postPatch - skip the setuptools replacement that doesn't apply to 2.9.1
+  postPatch = ''
+    # Add necessary postPatch commands for PyTorch 2.9.1 if needed
+  '';
+  patches = [];
 
   # CPU-only build metadata
   passthru = oldAttrs.passthru // {
